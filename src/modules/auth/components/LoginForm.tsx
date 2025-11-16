@@ -1,0 +1,138 @@
+// src/modules/auth/components/LoginForm.tsx
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  loginSchema,
+  type LoginFormValues,
+} from "../../../types/auth/LoginSchema";
+import { Link } from "react-router-dom";
+import Tilt from "react-parallax-tilt";
+import { FiLogIn } from "react-icons/fi";
+import { FaSpinner } from "react-icons/fa";
+
+interface LoginFormProps {
+  onSubmit: (data: LoginFormValues) => void;
+  isLoading: boolean;
+  error: string | null;
+}
+
+export function LoginForm({ onSubmit, isLoading, error }: LoginFormProps) {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+  });
+
+  // Estilo de input adaptado de tu proyecto 'curso-tailwind'
+  const inputStyle =
+    "w-full p-3 rounded-lg bg-gray-700/50 border border-gray-600 dark:bg-gray-800/50 dark:border-gray-700 " +
+    "text-white dark:text-gray-200 placeholder:text-gray-400 " +
+    "focus:outline-none focus:ring-2 focus:ring-cyan-400 transition-all duration-300";
+
+  return (
+    <Tilt
+      tiltMaxAngleX={5}
+      tiltMaxAngleY={5}
+      glareEnable={true}
+      glareMaxOpacity={0.1}
+      glareBorderRadius="1rem"
+      className="w-full max-w-md"
+    >
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        // Estilo de tarjeta adaptado de 'curso-tailwind'
+        className="w-full max-w-md p-8 md:p-10 rounded-2xl 
+                   bg-white/10 dark:bg-gray-900/50 
+                   border border-gray-700/50 shadow-2xl backdrop-blur-lg"
+      >
+        <h2 className="font-maven text-3xl font-bold text-center text-white mb-2">
+          Iniciar Sesión
+        </h2>
+        <p className="text-center text-gray-300 dark:text-gray-400 mb-8 font-maven">
+          Bienvenido de nuevo.
+        </p>
+
+        {error && (
+          <div className="w-full p-3 mb-4 rounded-lg bg-red-500/20 border border-red-500 text-red-300 text-sm">
+            {error}
+          </div>
+        )}
+
+        <div className="mb-6">
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-gray-300 mb-2"
+          >
+            Correo Electrónico
+          </label>
+          <input
+            id="email"
+            type="email"
+            placeholder="tu@email.com"
+            className={`${inputStyle} ${
+              errors.email ? "ring-2 ring-red-500" : ""
+            }`}
+            {...register("email")}
+            disabled={isLoading}
+          />
+          {errors.email && (
+            <p className="text-red-400 text-sm mt-2">{errors.email.message}</p>
+          )}
+        </div>
+
+        <div className="mb-8">
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-gray-300 mb-2"
+          >
+            Contraseña
+          </label>
+          <input
+            id="password"
+            type="password"
+            placeholder="••••••••"
+            className={`${inputStyle} ${
+              errors.password ? "ring-2 ring-red-500" : ""
+            }`}
+            {...register("password")}
+            disabled={isLoading}
+          />
+          {errors.password && (
+            <p className="text-red-400 text-sm mt-2">
+              {errors.password.message}
+            </p>
+          )}
+        </div>
+
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="w-full flex items-center justify-center gap-2 p-3 rounded-lg font-maven font-semibold 
+                     text-white bg-cyan-600 hover:bg-cyan-500 
+                     transition-all duration-300 ease-in-out
+                     hover:scale-105 active:scale-95
+                     disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isLoading ? (
+            <FaSpinner className="h-5 w-5 animate-spin" />
+          ) : (
+            <FiLogIn className="h-5 w-5" />
+          )}
+          <span>{isLoading ? "Iniciando..." : "Iniciar Sesión"}</span>
+        </button>
+
+        <p className="text-center text-sm text-gray-400 mt-6">
+          ¿No tienes una cuenta?{" "}
+          <Link
+            to="/register" // (Asumiendo que crearemos esta ruta)
+            className="font-medium text-cyan-400 hover:text-cyan-300 underline"
+          >
+            Regístrate aquí
+          </Link>
+        </p>
+      </form>
+    </Tilt>
+  );
+}
