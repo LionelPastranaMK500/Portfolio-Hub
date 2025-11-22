@@ -3,9 +3,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../services/auth/authStore";
 import type { LoginFormValues } from "../../types/auth/LoginSchema";
-import { LoginForm } from "./components/LoginForm"; // Importa el formulario
-
-// Notificaciones
+import { LoginForm } from "./components/LoginForm";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useThemeStore } from "../../store/themeStore";
@@ -16,14 +14,12 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Redirige si ya está logueado
   useEffect(() => {
     if (isAuthenticated) {
       navigate("/dashboard", { replace: true });
     }
   }, [isAuthenticated, navigate]);
 
-  // Lógica de submit
   const handleLoginSubmit = async (data: LoginFormValues) => {
     setIsLoading(true);
     setError(null);
@@ -31,7 +27,6 @@ export default function LoginPage() {
     try {
       await login(data);
       toast.success("¡Bienvenido de nuevo!");
-      // El store de auth y el PrivateRoute se encargarán de la redirección
       navigate("/dashboard", { replace: true });
     } catch (err: any) {
       const errorMessage =

@@ -9,7 +9,7 @@ export interface EducationDto {
   institution: string;
   degree: string;
   field: string | null;
-  startDate: string; // (LocalDate se convierte en string ISO "YYYY-MM-DD")
+  startDate: string;
   endDate: string | null;
   description: string | null;
 }

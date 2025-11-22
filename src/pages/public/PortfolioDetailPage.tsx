@@ -1,17 +1,14 @@
-// src/pages/public/PortfolioDetailPage.tsx
 import { useParams, Link } from "react-router-dom";
 import { usePortfolioDetail } from "../../services/publicPortfolioService";
 import type {
   PortfolioDetailDto,
   ProjectSummaryDto,
 } from "../../types/portfolio";
-import type { SocialLinkDto } from "../../types/socialLink";
 import type { SkillCategoryDto } from "../../types/skillCategory";
 import type { ExperienceDto } from "../../types/experience";
 import type { EducationDto } from "../../types/education";
 import type { CertificateDto } from "../../types/certificate";
-
-// --- Iconos ---
+import { ContactForm } from "./components/ContactForm";
 import {
   FaSpinner,
   FaExclamationTriangle,
@@ -25,14 +22,12 @@ import {
   FaLink,
   FaGithub,
   FaLinkedin,
-  FaGlobe, // Para 'liveUrl' o links genéricos
 } from "react-icons/fa";
 
 // ==========================================
 // --- SECCIÓN HERO (Perfil y Redes) ---
 // ==========================================
 const HeroSection = ({ portfolio }: { portfolio: PortfolioDetailDto }) => {
-  // Mapeo simple de iconos de redes sociales
   const getSocialIcon = (platform: string) => {
     const lowerPlatform = platform.toLowerCase();
     if (lowerPlatform.includes("github"))
@@ -188,9 +183,6 @@ const ProjectsSection = ({
               {project.title}
             </h3>
             <p className="text-gray-300 mb-4 line-clamp-3">{project.summary}</p>
-            {/* Enlazamos a la futura ruta de detalle del proyecto.
-              Esta ruta también la definimos en publicPortfolioService.ts
-            */}
             <Link
               to={`/portfolios/${profileSlug}/projects/${project.slug}`}
               className="font-semibold text-cyan-300 hover:text-cyan-200"
@@ -265,7 +257,7 @@ const CertificatesSection = ({
       {certificates.map((cert) => (
         <a
           key={cert.id}
-          href={cert.imageUrl || "#"} // Idealmente, enlazar al PDF si existe
+          href={cert.imageUrl || "#"}
           target="_blank"
           rel="noopener noreferrer"
           className="block p-4 rounded-lg bg-white/5 border border-gray-700/50
@@ -287,7 +279,7 @@ const CertificatesSection = ({
 export default function PortfolioDetailPage() {
   const { slug } = useParams<{ slug: string }>();
 
-  // 1. Llama al hook con el slug de la URL
+  // Hook para obtener los datos
   const {
     data: portfolio,
     isLoading,
@@ -295,7 +287,7 @@ export default function PortfolioDetailPage() {
     error,
   } = usePortfolioDetail(slug!);
 
-  // 2. Estado de Carga
+  // Estado de Carga
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -304,7 +296,7 @@ export default function PortfolioDetailPage() {
     );
   }
 
-  // 3. Estado de Error
+  // Estado de Error
   if (isError) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -331,10 +323,11 @@ export default function PortfolioDetailPage() {
     );
   }
 
-  // 4. Estado Exitoso
+  // Renderizado Seguro (portfolio existe)
+  if (!portfolio) return null;
+
   return (
     <div className="container mx-auto max-w-5xl px-4 py-12 md:py-20">
-      {/* --- Renderiza todas las secciones --- */}
       <HeroSection portfolio={portfolio} />
       <AboutSection bio={portfolio.bio} />
       <SkillsSection categories={portfolio.skillCategories} />
@@ -345,10 +338,7 @@ export default function PortfolioDetailPage() {
       <ExperienceSection experiences={portfolio.experiences} />
       <EducationSection education={portfolio.education} />
       <CertificatesSection certificates={portfolio.certificates} />
-
-      {/* PRÓXIMO PASO: 
-        Aquí es donde agregaremos el Formulario de Contacto
-      */}
+      <ContactForm portfolioSlug={portfolio.slug} />
     </div>
   );
 }

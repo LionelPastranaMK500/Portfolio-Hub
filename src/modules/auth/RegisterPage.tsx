@@ -1,13 +1,13 @@
 // src/modules/auth/RegisterPage.tsx
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "@/services/auth/authStore";
-import type { RegisterFormValues } from "@/types/auth/RegisterSchema";
-import { RegisterForm } from "./components/RegisterForm"; // Importa el formulario
+import { useAuthStore } from "../../services/auth/authStore";
+import type { RegisterFormValues } from "../../types/auth/RegisterSchema";
+import { RegisterForm } from "./components/RegisterForm";
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useThemeStore } from "@/store/themeStore";
+import { useThemeStore } from "../../store/themeStore";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -25,16 +25,13 @@ export default function RegisterPage() {
     }
   }, [isAuthenticated, navigate]);
 
-  // Función de submit
   const handleRegisterSubmit = async (data: RegisterFormValues) => {
     setIsLoading(true);
     setError(null);
 
-    // Quitamos 'confirmPassword' que no es parte de RegisterRequest.java
     const { confirmPassword, ...apiData } = data;
 
     try {
-      // Llama a la acción de registro del store
       await register(apiData);
 
       toast.success("¡Cuenta creada! Bienvenido.");

@@ -1,5 +1,5 @@
 // src/services/publicPortfolioService.ts
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import apiClient from "../config/api";
 import type { ApiResponse } from "../types/ApiResponse";
 import type {
@@ -7,14 +7,13 @@ import type {
   PortfolioDetailDto,
 } from "../types/portfolio";
 import type { ProjectDto } from "../types/project";
+import type { ContactRequest } from "../types/Contact";
 
-// --- Query Keys ---
 export const PUBLIC_PORTFOLIOS_KEY = ["publicPortfolios"];
 export const PUBLIC_PORTFOLIO_DETAIL_KEY = "publicPortfolioDetail";
 export const PUBLIC_PROJECT_DETAIL_KEY = "publicProjectDetail";
 
 // --- API Functions ---
-
 /**
  * GET /api/portfolios
  * Obtiene la lista de todos los perfiles públicos
@@ -59,7 +58,25 @@ const getPublicProjectBySlugs = async ({
   throw new Error(response.message || "Error al obtener proyecto");
 };
 
-// --- React Query Hooks ---
+/**
+ * POST /api/portfolios/{slug}/contact
+ * Envía un mensaje de contacto al dueño del portafolio
+ */
+export const sendContactMessage = async ({
+  slug,
+  data,
+}: {
+  slug: string;
+  data: ContactRequest;
+}): Promise<void> => {
+  const { data: response } = await apiClient.post<ApiResponse<void>>(
+    `/portfolios/${slug}/contact`,
+    data
+  );
+  if (!response.success) {
+    throw new Error(response.message || "Error al enviar el mensaje");
+  }
+};
 
 /**
  * Hook para obtener la lista pública de portafolios
@@ -79,7 +96,7 @@ export const usePortfolioDetail = (slug: string) => {
   return useQuery({
     queryKey: [PUBLIC_PORTFOLIO_DETAIL_KEY, slug],
     queryFn: () => getPortfolioBySlug(slug),
-    enabled: !!slug, // Solo se ejecuta si el slug existe
+    enabled: !!slug,
     staleTime: 1000 * 60 * 5,
   });
 };
@@ -96,5 +113,14 @@ export const usePublicProjectDetail = (
     queryFn: () => getPublicProjectBySlugs({ profileSlug, projectSlug }),
     enabled: !!profileSlug && !!projectSlug,
     staleTime: 1000 * 60 * 5,
+  });
+};
+
+/**
+ * Hook (Mutación) para ENVIAR MENSAJE DE CONTACTO.
+ */
+export const useSendContactMessage = () => {
+  return useMutation({
+    mutationFn: sendContactMessage,
   });
 };
