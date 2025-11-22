@@ -19,7 +19,7 @@ export const PROJECTS_QUERY_KEY = ["projects"];
  * GET /api/me/projects
  * Obtiene TODOS los proyectos del usuario
  */
-const getMyProjects = async (): Promise<ProjectDto[]> => {
+export const getMyProjects = async (): Promise<ProjectDto[]> => {
   const { data: response } = await apiClient.get<ApiResponse<ProjectDto[]>>(
     "/me/projects"
   );
@@ -31,7 +31,7 @@ const getMyProjects = async (): Promise<ProjectDto[]> => {
  * GET /api/me/projects/{id}
  * Obtiene un proyecto específico por ID
  */
-const getProjectById = async (id: number): Promise<ProjectDto> => {
+export const getProjectById = async (id: number): Promise<ProjectDto> => {
   const { data: response } = await apiClient.get<ApiResponse<ProjectDto>>(
     `/me/projects/${id}`
   );
@@ -43,7 +43,7 @@ const getProjectById = async (id: number): Promise<ProjectDto> => {
  * POST /api/me/projects
  * Crea un nuevo proyecto
  */
-const createProject = async (
+export const createProject = async (
   newData: ProjectCreateRequest
 ): Promise<ProjectDto> => {
   const { data: response } = await apiClient.post<ApiResponse<ProjectDto>>(
@@ -58,7 +58,7 @@ const createProject = async (
  * PUT /api/me/projects
  * Actualiza un proyecto (el ID va en el body)
  */
-const updateProject = async (
+export const updateProject = async (
   updatedData: ProjectUpdateRequest
 ): Promise<ProjectDto> => {
   const { data: response } = await apiClient.put<ApiResponse<ProjectDto>>(
@@ -73,7 +73,7 @@ const updateProject = async (
  * DELETE /api/me/projects/{id}
  * Elimina un proyecto
  */
-const deleteProject = async (id: number): Promise<void> => {
+export const deleteProject = async (id: number): Promise<void> => {
   const { data: response } = await apiClient.delete<ApiResponse<void>>(
     `/me/projects/${id}`
   );
@@ -86,7 +86,7 @@ const deleteProject = async (id: number): Promise<void> => {
  * POST /api/me/projects/{projectId}/skills
  * Asocia una lista de IDs de Skills a un proyecto
  */
-const associateSkills = async ({
+export const associateSkills = async ({
   projectId,
   skillIds,
 }: {

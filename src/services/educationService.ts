@@ -9,29 +9,20 @@ import type {
 } from "../types/education";
 import { useAuthStore } from "./auth/authStore";
 
-// 1. Identificador único de la query
+export type { EducationDto, EducationCreateRequest, EducationUpdateRequest };
+
 export const EDUCATION_QUERY_KEY = ["education"];
 
 // --- API FUNCTIONS ---
 
-/**
- * GET /api/me/education
- * Obtiene TODA la educación del usuario autenticado
- */
 const getMyEducation = async (): Promise<EducationDto[]> => {
   const { data: response } = await apiClient.get<ApiResponse<EducationDto[]>>(
     "/me/education"
   );
-  if (response.success) {
-    return response.data;
-  }
+  if (response.success) return response.data;
   throw new Error(response.message || "Error al obtener la educación");
 };
 
-/**
- * POST /api/me/education
- * Crea una nueva entrada de educación
- */
 const createEducation = async (
   newData: EducationCreateRequest
 ): Promise<EducationDto> => {
@@ -39,16 +30,10 @@ const createEducation = async (
     "/me/education",
     newData
   );
-  if (response.success) {
-    return response.data;
-  }
-  throw new Error(response.message || "Error al crear la entrada de educación");
+  if (response.success) return response.data;
+  throw new Error(response.message || "Error al crear la educación");
 };
 
-/**
- * PUT /api/me/education
- * Actualiza una entrada de educación existente
- */
 const updateEducation = async (
   updatedData: EducationUpdateRequest
 ): Promise<EducationDto> => {
@@ -56,16 +41,10 @@ const updateEducation = async (
     "/me/education",
     updatedData
   );
-  if (response.success) {
-    return response.data;
-  }
+  if (response.success) return response.data;
   throw new Error(response.message || "Error al actualizar la educación");
 };
 
-/**
- * DELETE /api/me/education/{id}
- * Elimina una entrada de educación
- */
 const deleteEducation = async (id: number): Promise<void> => {
   const { data: response } = await apiClient.delete<ApiResponse<void>>(
     `/me/education/${id}`
@@ -75,38 +54,28 @@ const deleteEducation = async (id: number): Promise<void> => {
   }
 };
 
-// --- REACT QUERY HOOKS ---
+// --- HOOKS ---
 
-/**
- * Hook para obtener la lista de educación del usuario.
- */
 export const useMyEducation = () => {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   return useQuery({
     queryKey: EDUCATION_QUERY_KEY,
     queryFn: getMyEducation,
-    enabled: !!isAuthenticated, // Solo activo si está logueado
-    staleTime: 1000 * 60 * 5, // 5 minutos de caché
+    enabled: !!isAuthenticated,
+    staleTime: 1000 * 60 * 5,
   });
 };
 
-/**
- * Hook (Mutación) para CREAR una nueva entrada de educación.
- */
 export const useCreateEducation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createEducation,
     onSuccess: () => {
-      // Invalida la caché de 'education' para refrescar
       queryClient.invalidateQueries({ queryKey: EDUCATION_QUERY_KEY });
     },
   });
 };
 
-/**
- * Hook (Mutación) para ACTUALIZAR una entrada de educación.
- */
 export const useUpdateEducation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -117,9 +86,6 @@ export const useUpdateEducation = () => {
   });
 };
 
-/**
- * Hook (Mutación) para ELIMINAR una entrada de educación.
- */
 export const useDeleteEducation = () => {
   const queryClient = useQueryClient();
   return useMutation({

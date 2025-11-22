@@ -1,6 +1,5 @@
 // src/config/particlesConfig.ts
-// Configuración extraída de tu proyecto curso-tailwind
-import type { ISourceOptions } from "@tsparticles/slim";
+import type { ISourceOptions } from "@tsparticles/engine";
 
 export const particlesConfig: ISourceOptions = {
   particles: {
@@ -8,7 +7,6 @@ export const particlesConfig: ISourceOptions = {
       value: 80,
       density: {
         enable: true,
-        value_area: 800,
       },
     },
     color: {
@@ -18,14 +16,12 @@ export const particlesConfig: ISourceOptions = {
       type: "circle",
     },
     opacity: {
-      value: 0.5,
-      random: false,
+      value: { min: 0.1, max: 0.5 },
     },
     size: {
-      value: 3,
-      random: true,
+      value: { min: 1, max: 3 },
     },
-    line_linked: {
+    links: {
       enable: true,
       distance: 150,
       color: "#ffffff",
@@ -38,32 +34,35 @@ export const particlesConfig: ISourceOptions = {
       direction: "none",
       random: false,
       straight: false,
-      out_mode: "out",
-      bounce: false,
+      outModes: "out",
     },
   },
   interactivity: {
-    detect_on: "canvas",
+    detectsOn: "canvas",
     events: {
-      onhover: {
+      onHover: {
         enable: true,
         mode: "grab",
       },
-      onclick: {
+      onClick: {
         enable: true,
         mode: "push",
       },
-      resize: true,
+      resize: {
+        enable: true,
+      },
     },
     modes: {
       grab: {
         distance: 140,
-        line_opacity: 1,
+        links: {
+          opacity: 1,
+        },
       },
       push: {
-        particles_nb: 4,
+        quantity: 4,
       },
     },
   },
-  retina_detect: true,
+  detectRetina: true,
 };

@@ -1,51 +1,77 @@
-// src/routes/AppRoutes.tsx
 import { Routes, Route, Navigate } from "react-router-dom";
-import { lazy, Suspense } from "react";
+import { Suspense } from "react"; // Quitamos 'lazy' de aquí, ya no lo usamos directo
 import { PublicLayout } from "../components/layouts/PublicLayout";
 import { PrivateLayout } from "../components/layouts/PrivateLayout";
 import PublicRoute from "./PublicRoute";
 import PrivateRoute from "./PrivateRoute";
+import { Loader } from "../components/common/Loader";
 
-// Loader Component
-const PageLoader = () => (
-  <div className="flex items-center justify-center min-h-[50vh]">
-    <div className="flex flex-col items-center gap-4">
-      <div className="w-12 h-12 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin"></div>
-      <span className="text-cyan-400 font-maven text-sm animate-pulse">
-        Cargando contenido...
-      </span>
-    </div>
-  </div>
-);
+import { lazyWithDelay } from "../utils/lazyWithDelay";
 
-// --- CARGA DIFERIDA (LAZY LOADING) ---
-
-// Páginas Públicas
-const HomePage = lazy(() => import("../pages/public/HomePage"));
-const PortfolioDetailPage = lazy(
+const HomePage = lazyWithDelay(() => import("../pages/public/HomePage"));
+const PortfolioDetailPage = lazyWithDelay(
   () => import("../pages/public/PortfolioDetailPage")
 );
-const NotFoundPage = lazy(() => import("../pages/public/NotFoundPage"));
-const LoginPage = lazy(() => import("../modules/auth/LoginPage"));
-const RegisterPage = lazy(() => import("../modules/auth/RegisterPage"));
+const ProjectDetailPage = lazyWithDelay(
+  () => import("../pages/public/ProjectDetailPage")
+);
+const NotFoundPage = lazyWithDelay(
+  () => import("../pages/public/NotFoundPage")
+);
+const LoginPage = lazyWithDelay(() => import("../modules/auth/LoginPage"));
+const RegisterPage = lazyWithDelay(
+  () => import("../modules/auth/RegisterPage")
+);
 
-// Páginas Privadas (Dashboard) - Placeholder para cuando lleguemos a la parte privada
-// const DashboardProfile = lazy(() => import("../pages/dashboard/ProfilePage"));
+// Páginas Privadas
+const DashboardProfile = lazyWithDelay(
+  () => import("../pages/dashboard/ProfilePage")
+);
+const DashboardProjects = lazyWithDelay(
+  () => import("../pages/dashboard/projects/ProjectListPage")
+);
+const DashboardProjectSave = lazyWithDelay(
+  () => import("../pages/dashboard/projects/ProjectSavePage")
+);
+const DashboardExperience = lazyWithDelay(
+  () => import("../pages/dashboard/experience/ExperienceListPage")
+);
+const DashboardExperienceSave = lazyWithDelay(
+  () => import("../pages/dashboard/experience/ExperienceSavePage")
+);
+const DashboardEducation = lazyWithDelay(
+  () => import("../pages/dashboard/education/EducationListPage")
+);
+const DashboardEducationSave = lazyWithDelay(
+  () => import("../pages/dashboard/education/EducationSavePage")
+);
+const DashboardSkills = lazyWithDelay(
+  () => import("../pages/dashboard/skills/SkillManagerPage")
+);
+const DashboardCertificates = lazyWithDelay(
+  () => import("../pages/dashboard/certificates/CertificateListPage")
+);
+const DashboardCertificateSave = lazyWithDelay(
+  () => import("../pages/dashboard/certificates/CertificateSavePage")
+);
+const DashboardSocials = lazyWithDelay(
+  () => import("../pages/dashboard/socials/SocialLinkListPage")
+);
+const DashboardSocialSave = lazyWithDelay(
+  () => import("../pages/dashboard/socials/SocialLinkSavePage")
+);
 
 const AppRoutes = () => {
   return (
     <Routes>
-      {/* =========================================
-          ZONA PÚBLICA (Landing, Auth, Detalle)
-         ========================================= */}
-
-      {/* Rutas protegidas para NO autenticados (Login/Register) */}
+      {/* ... RUTAS PÚBLICAS ... */}
       <Route element={<PublicRoute />}>
         <Route element={<PublicLayout />}>
           <Route
             path="/login"
             element={
-              <Suspense fallback={<PageLoader />}>
+              <Suspense fallback={<Loader />}>
+                {" "}
                 <LoginPage />
               </Suspense>
             }
@@ -53,7 +79,7 @@ const AppRoutes = () => {
           <Route
             path="/register"
             element={
-              <Suspense fallback={<PageLoader />}>
+              <Suspense fallback={<Loader />}>
                 <RegisterPage />
               </Suspense>
             }
@@ -61,12 +87,11 @@ const AppRoutes = () => {
         </Route>
       </Route>
 
-      {/* Rutas públicas accesibles para todos (Home, Detalle) */}
       <Route element={<PublicLayout />}>
         <Route
           path="/"
           element={
-            <Suspense fallback={<PageLoader />}>
+            <Suspense fallback={<Loader />}>
               <HomePage />
             </Suspense>
           }
@@ -74,35 +99,185 @@ const AppRoutes = () => {
         <Route
           path="/portfolios/:slug"
           element={
-            <Suspense fallback={<PageLoader />}>
+            <Suspense fallback={<Loader />}>
               <PortfolioDetailPage />
             </Suspense>
           }
         />
-        {/* 404 Not Found */}
+        <Route
+          path="/portfolios/:profileSlug/projects/:projectSlug"
+          element={
+            <Suspense fallback={<Loader />}>
+              <ProjectDetailPage />
+            </Suspense>
+          }
+        />
         <Route
           path="*"
           element={
-            <Suspense fallback={<PageLoader />}>
+            <Suspense fallback={<Loader />}>
               <NotFoundPage />
             </Suspense>
           }
         />
       </Route>
 
-      {/* =========================================
-          ZONA PRIVADA (Dashboard)
-         ========================================= */}
+      {/* ... RUTAS PRIVADAS ... */}
       <Route element={<PrivateRoute />}>
         <Route element={<PrivateLayout />}>
           <Route
             path="/dashboard"
             element={<Navigate to="/dashboard/profile" replace />}
           />
-          {/* Aquí añadiremos las rutas del dashboard en el siguiente paso */}
+
+          {/* PERFIL */}
           <Route
             path="/dashboard/profile"
-            element={<div>Perfil (Próximamente)</div>}
+            element={
+              <Suspense fallback={<Loader />}>
+                <DashboardProfile />
+              </Suspense>
+            }
+          />
+
+          {/* PROYECTOS */}
+          <Route
+            path="/dashboard/projects"
+            element={
+              <Suspense fallback={<Loader />}>
+                <DashboardProjects />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/dashboard/projects/new"
+            element={
+              <Suspense fallback={<Loader />}>
+                <DashboardProjectSave />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/dashboard/projects/edit/:id"
+            element={
+              <Suspense fallback={<Loader />}>
+                <DashboardProjectSave />
+              </Suspense>
+            }
+          />
+
+          {/* EXPERIENCIA */}
+          <Route
+            path="/dashboard/experience"
+            element={
+              <Suspense fallback={<Loader />}>
+                <DashboardExperience />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/dashboard/experience/new"
+            element={
+              <Suspense fallback={<Loader />}>
+                <DashboardExperienceSave />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/dashboard/experience/edit/:id"
+            element={
+              <Suspense fallback={<Loader />}>
+                <DashboardExperienceSave />
+              </Suspense>
+            }
+          />
+
+          {/* EDUCACIÓN */}
+          <Route
+            path="/dashboard/education"
+            element={
+              <Suspense fallback={<Loader />}>
+                <DashboardEducation />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/dashboard/education/new"
+            element={
+              <Suspense fallback={<Loader />}>
+                <DashboardEducationSave />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/dashboard/education/edit/:id"
+            element={
+              <Suspense fallback={<Loader />}>
+                <DashboardEducationSave />
+              </Suspense>
+            }
+          />
+
+          {/* SKILLS */}
+          <Route
+            path="/dashboard/skills"
+            element={
+              <Suspense fallback={<Loader />}>
+                <DashboardSkills />
+              </Suspense>
+            }
+          />
+
+          {/* CERTIFICADOS */}
+          <Route
+            path="/dashboard/certificates"
+            element={
+              <Suspense fallback={<Loader />}>
+                <DashboardCertificates />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/dashboard/certificates/new"
+            element={
+              <Suspense fallback={<Loader />}>
+                <DashboardCertificateSave />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/dashboard/certificates/edit/:id"
+            element={
+              <Suspense fallback={<Loader />}>
+                <DashboardCertificateSave />
+              </Suspense>
+            }
+          />
+
+          {/* REDES SOCIALES */}
+          <Route
+            path="/dashboard/socials"
+            element={
+              <Suspense fallback={<Loader />}>
+                <DashboardSocials />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/dashboard/socials/new"
+            element={
+              <Suspense fallback={<Loader />}>
+                <DashboardSocialSave />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/dashboard/socials/edit/:id"
+            element={
+              <Suspense fallback={<Loader />}>
+                <DashboardSocialSave />
+              </Suspense>
+            }
           />
         </Route>
       </Route>

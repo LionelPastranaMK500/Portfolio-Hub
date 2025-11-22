@@ -23,6 +23,7 @@ import {
   FaGithub,
   FaLinkedin,
 } from "react-icons/fa";
+import { SEO } from "../../components/common/SEO";
 
 // ==========================================
 // --- SECCIÓN HERO (Perfil y Redes) ---
@@ -323,22 +324,29 @@ export default function PortfolioDetailPage() {
     );
   }
 
-  // Renderizado Seguro (portfolio existe)
   if (!portfolio) return null;
 
   return (
-    <div className="container mx-auto max-w-5xl px-4 py-12 md:py-20">
-      <HeroSection portfolio={portfolio} />
-      <AboutSection bio={portfolio.bio} />
-      <SkillsSection categories={portfolio.skillCategories} />
-      <ProjectsSection
-        projects={portfolio.projects}
-        profileSlug={portfolio.slug}
+    <>
+      <SEO
+        title={portfolio.fullName}
+        description={portfolio.headline}
+        name={portfolio.fullName}
+        type="profile"
       />
-      <ExperienceSection experiences={portfolio.experiences} />
-      <EducationSection education={portfolio.education} />
-      <CertificatesSection certificates={portfolio.certificates} />
-      <ContactForm portfolioSlug={portfolio.slug} />
-    </div>
+      <div className="container mx-auto max-w-5xl px-4 py-12 md:py-20">
+        <HeroSection portfolio={portfolio} />
+        <AboutSection bio={portfolio.bio} />
+        <SkillsSection categories={portfolio.skillCategories} />
+        <ProjectsSection
+          projects={portfolio.projects}
+          profileSlug={portfolio.slug}
+        />
+        <ExperienceSection experiences={portfolio.experiences} />
+        <EducationSection education={portfolio.education} />
+        <CertificatesSection certificates={portfolio.certificates} />
+        <ContactForm portfolioSlug={portfolio.slug} />
+      </div>
+    </>
   );
 }

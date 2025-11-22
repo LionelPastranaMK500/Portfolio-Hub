@@ -2,6 +2,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import apiClient from "../config/api";
 import type { ApiResponse } from "../types/ApiResponse";
+
+// Importamos los tipos originales
 import type {
   SkillCategoryDto,
   SkillCategoryCreateRequest,
@@ -16,214 +18,155 @@ import type {
 } from "../types/skill";
 import { useAuthStore } from "./auth/authStore";
 
-// Query Key principal para toda la data de skills/categorías
+// --- RE-EXPORTACIÓN (La técnica Pro) ---
+export type {
+  SkillCategoryDto,
+  SkillCategoryCreateRequest,
+  SkillCategoryUpdateRequest,
+  SkillDto,
+  SkillCreateRequest,
+  SkillUpdateRequest,
+};
+
 export const SKILL_CATEGORIES_QUERY_KEY = ["skillCategories"];
 
-// --- API: Funciones de SkillCategory ---
+// --- API FUNCTIONS ---
 
-/**
- * GET /api/me/skill-categories
- */
+// 1. Obtener todo el árbol
 const getSkillCategories = async (): Promise<SkillCategoryDto[]> => {
   const { data: res } = await apiClient.get<ApiResponse<SkillCategoryDto[]>>(
     "/me/skill-categories"
   );
   if (res.success) return res.data;
-  throw new Error(res.message || "Error al obtener categorías");
+  throw new Error(res.message);
 };
 
-/**
- * POST /api/me/skill-categories/batch
- */
-const batchCreateCategories = async (
-  newData: SkillCategoryCreateRequest[]
-): Promise<SkillCategoryDto[]> => {
+// 2. Crear Categoría (Batch de 1)
+const createCategory = async (
+  data: SkillCategoryCreateRequest
+): Promise<void> => {
+  // La API espera un array (batch), así que envolvemos el objeto en [data]
   const { data: res } = await apiClient.post<ApiResponse<SkillCategoryDto[]>>(
     "/me/skill-categories/batch",
-    newData
+    [data]
   );
-  if (res.success) return res.data;
-  throw new Error(res.message || "Error al crear categorías");
+  if (!res.success) throw new Error(res.message);
 };
 
-/**
- * PUT /api/me/skill-categories/batch
- */
-const batchUpdateCategories = async (
-  updatedData: SkillCategoryUpdateRequest[]
-): Promise<SkillCategoryDto[]> => {
+// 3. Actualizar Categoría
+const updateCategory = async (
+  data: SkillCategoryUpdateRequest
+): Promise<void> => {
   const { data: res } = await apiClient.put<ApiResponse<SkillCategoryDto[]>>(
     "/me/skill-categories/batch",
-    updatedData
+    [data]
   );
-  if (res.success) return res.data;
-  throw new Error(res.message || "Error al actualizar categorías");
+  if (!res.success) throw new Error(res.message);
 };
 
-/**
- * DELETE /api/me/skill-categories/batch
- */
-const batchDeleteCategories = async (
-  payload: CategoryBatchDeleteRequest
-): Promise<void> => {
+// 4. Eliminar Categoría
+const deleteCategory = async (id: number): Promise<void> => {
+  const payload: CategoryBatchDeleteRequest = { ids: [id] };
   const { data: res } = await apiClient.delete<ApiResponse<void>>(
     "/me/skill-categories/batch",
-    { data: payload } // DELETE con body se pasa en la propiedad 'data'
+    { data: payload }
   );
-  if (!res.success) {
-    throw new Error(res.message || "Error al eliminar categorías");
-  }
+  if (!res.success) throw new Error(res.message);
 };
 
-// --- API: Funciones de Skill (Anidadas) ---
-
-/**
- * POST /api/me/skill-categories/{categoryId}/skills/batch
- */
-const batchCreateSkills = async ({
+// 5. Crear Skill (Batch de 1)
+const createSkill = async ({
   categoryId,
-  skills,
+  data,
 }: {
   categoryId: number;
-  skills: SkillCreateRequest[];
-}): Promise<SkillDto[]> => {
+  data: SkillCreateRequest;
+}): Promise<void> => {
   const { data: res } = await apiClient.post<ApiResponse<SkillDto[]>>(
     `/me/skill-categories/${categoryId}/skills/batch`,
-    skills
+    [data]
   );
-  if (res.success) return res.data;
-  throw new Error(res.message || "Error al crear skills");
+  if (!res.success) throw new Error(res.message);
 };
 
-/**
- * PUT /api/me/skill-categories/{categoryId}/skills/batch
- */
-const batchUpdateSkills = async ({
+// 6. Actualizar Skill
+const updateSkill = async ({
   categoryId,
-  skills,
+  data,
 }: {
   categoryId: number;
-  skills: SkillUpdateRequest[];
-}): Promise<SkillDto[]> => {
+  data: SkillUpdateRequest;
+}): Promise<void> => {
   const { data: res } = await apiClient.put<ApiResponse<SkillDto[]>>(
     `/me/skill-categories/${categoryId}/skills/batch`,
-    skills
+    [data]
   );
-  if (res.success) return res.data;
-  throw new Error(res.message || "Error al actualizar skills");
+  if (!res.success) throw new Error(res.message);
 };
 
-/**
- * DELETE /api/me/skill-categories/{categoryId}/skills/batch
- */
-const batchDeleteSkills = async ({
+// 7. Eliminar Skill
+const deleteSkill = async ({
   categoryId,
-  payload,
+  skillId,
 }: {
   categoryId: number;
-  payload: SkillBatchDeleteRequest;
+  skillId: number;
 }): Promise<void> => {
+  const payload: SkillBatchDeleteRequest = { ids: [skillId] };
   const { data: res } = await apiClient.delete<ApiResponse<void>>(
     `/me/skill-categories/${categoryId}/skills/batch`,
     { data: payload }
   );
-  if (!res.success) {
-    throw new Error(res.message || "Error al eliminar skills");
-  }
+  if (!res.success) throw new Error(res.message);
 };
 
-// --- Hooks: SkillCategory ---
+// --- HOOKS ---
 
-/**
- * Hook para OBTENER todas las categorías y sus skills anidados.
- */
 export const useSkillCategories = () => {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   return useQuery({
     queryKey: SKILL_CATEGORIES_QUERY_KEY,
     queryFn: getSkillCategories,
     enabled: !!isAuthenticated,
-    staleTime: 1000 * 60 * 5, // 5 minutos
+    staleTime: 1000 * 60 * 5,
   });
 };
 
-/**
- * Hook (Mutación) para CREAR categorías en lote.
- */
-export const useBatchCreateCategories = () => {
+// Helper para invalidar cache
+const useInvalidateSkills = () => {
   const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: batchCreateCategories,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: SKILL_CATEGORIES_QUERY_KEY });
-    },
-  });
+  return () =>
+    queryClient.invalidateQueries({ queryKey: SKILL_CATEGORIES_QUERY_KEY });
 };
 
-/**
- * Hook (Mutación) para ACTUALIZAR categorías en lote.
- */
-export const useBatchUpdateCategories = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: batchUpdateCategories,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: SKILL_CATEGORIES_QUERY_KEY });
-    },
-  });
+// --- Hooks de Mutación Simplificados ---
+
+export const useCreateCategory = () => {
+  const invalidate = useInvalidateSkills();
+  return useMutation({ mutationFn: createCategory, onSuccess: invalidate });
 };
 
-/**
- * Hook (Mutación) para ELIMINAR categorías en lote.
- */
-export const useBatchDeleteCategories = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: batchDeleteCategories,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: SKILL_CATEGORIES_QUERY_KEY });
-    },
-  });
+export const useUpdateCategory = () => {
+  const invalidate = useInvalidateSkills();
+  return useMutation({ mutationFn: updateCategory, onSuccess: invalidate });
 };
 
-// --- Hooks: Skill (Anidados) ---
-
-/**
- * Hook (Mutación) para CREAR skills en lote bajo una categoría.
- */
-export const useBatchCreateSkills = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: batchCreateSkills,
-    onSuccess: () => {
-      // Cualquier cambio en los skills requiere refrescar el árbol completo
-      queryClient.invalidateQueries({ queryKey: SKILL_CATEGORIES_QUERY_KEY });
-    },
-  });
+export const useDeleteCategory = () => {
+  const invalidate = useInvalidateSkills();
+  return useMutation({ mutationFn: deleteCategory, onSuccess: invalidate });
 };
 
-/**
- * Hook (Mutación) para ACTUALIZAR skills en lote bajo una categoría.
- */
-export const useBatchUpdateSkills = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: batchUpdateSkills,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: SKILL_CATEGORIES_QUERY_KEY });
-    },
-  });
+export const useCreateSkill = () => {
+  const invalidate = useInvalidateSkills();
+  return useMutation({ mutationFn: createSkill, onSuccess: invalidate });
 };
 
-/**
- * Hook (Mutación) para ELIMINAR skills en lote bajo una categoría.
- */
-export const useBatchDeleteSkills = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: batchDeleteSkills,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: SKILL_CATEGORIES_QUERY_KEY });
-    },
-  });
+export const useUpdateSkill = () => {
+  const invalidate = useInvalidateSkills();
+  return useMutation({ mutationFn: updateSkill, onSuccess: invalidate });
+};
+
+export const useDeleteSkill = () => {
+  const invalidate = useInvalidateSkills();
+  return useMutation({ mutationFn: deleteSkill, onSuccess: invalidate });
 };

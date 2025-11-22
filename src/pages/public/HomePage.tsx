@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { usePublicPortfolios } from "../../services/publicPortfolioService";
 import type { PortfolioPublicDto } from "../../types/portfolio";
 import { FaSpinner, FaExclamationTriangle, FaUser } from "react-icons/fa";
-import Tilt from "react-parallax-tilt"; // Usamos el mismo efecto de las formas de login
+import Tilt from "react-parallax-tilt";
+import { SEO } from "../../components/common/SEO";
 
 /**
  * Componente Tarjeta para mostrar un resumen del portafolio.
@@ -97,31 +98,37 @@ export default function HomePage() {
 
   // 4. Estado Exitoso (Success)
   return (
-    <section className="container mx-auto max-w-7xl px-4 py-12 md:py-20">
-      {/* --- Título de la Sección --- */}
-      <h1
-        className="text-4xl md:text-5xl font-bold text-center mb-4 font-maven text-white"
-        style={{ textShadow: "0 2px 10px rgba(0,0,0,0.3)" }}
-      >
-        Explora los Portafolios
-      </h1>
-      <p className="text-xl text-center text-cyan-200 mb-16 font-maven">
-        Descubre el talento y los proyectos de nuestra comunidad.
-      </p>
-
-      {/* --- Grid de Portafolios --- */}
-      {portfolios && portfolios.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {portfolios.map((portfolio) => (
-            <PortfolioCard key={portfolio.slug} portfolio={portfolio} />
-          ))}
-        </div>
-      ) : (
-        // Mensaje si la API no devuelve portafolios
-        <p className="text-center text-gray-300 text-lg">
-          Aún no hay portafolios públicos disponibles. ¡Vuelve pronto!
+    <>
+      <SEO
+        title="Inicio"
+        description="Explora los mejores portafolios de desarrolladores en Portfolio Hub."
+      />
+      <section className="container mx-auto max-w-7xl px-4 py-12 md:py-20">
+        {/* --- Título de la Sección --- */}
+        <h1
+          className="text-4xl md:text-5xl font-bold text-center mb-4 font-maven text-white"
+          style={{ textShadow: "0 2px 10px rgba(0,0,0,0.3)" }}
+        >
+          Explora los Portafolios
+        </h1>
+        <p className="text-xl text-center text-cyan-200 mb-16 font-maven">
+          Descubre el talento y los proyectos de nuestra comunidad.
         </p>
-      )}
-    </section>
+
+        {/* --- Grid de Portafolios --- */}
+        {portfolios && portfolios.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            {portfolios.map((portfolio) => (
+              <PortfolioCard key={portfolio.slug} portfolio={portfolio} />
+            ))}
+          </div>
+        ) : (
+          // Mensaje si la API no devuelve portafolios
+          <p className="text-center text-gray-300 text-lg">
+            Aún no hay portafolios públicos disponibles. ¡Vuelve pronto!
+          </p>
+        )}
+      </section>
+    </>
   );
 }

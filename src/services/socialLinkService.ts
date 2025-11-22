@@ -9,15 +9,13 @@ import type {
 } from "../types/socialLink";
 import { useAuthStore } from "./auth/authStore";
 
-// 1. Query Key
+// --- RE-EXPORTACIÓN ---
+export type { SocialLinkDto, SocialLinkCreateRequest, SocialLinkUpdateRequest };
+
 export const SOCIAL_LINKS_QUERY_KEY = ["socialLinks"];
 
 // --- API FUNCTIONS ---
 
-/**
- * GET /api/me/social-links
- * Obtiene TODOS los enlaces sociales del usuario
- */
 const getMySocialLinks = async (): Promise<SocialLinkDto[]> => {
   const { data: response } = await apiClient.get<ApiResponse<SocialLinkDto[]>>(
     "/me/social-links"
@@ -26,10 +24,6 @@ const getMySocialLinks = async (): Promise<SocialLinkDto[]> => {
   throw new Error(response.message || "Error al obtener enlaces sociales");
 };
 
-/**
- * POST /api/me/social-links
- * Crea un nuevo enlace social
- */
 const createSocialLink = async (
   newData: SocialLinkCreateRequest
 ): Promise<SocialLinkDto> => {
@@ -41,10 +35,6 @@ const createSocialLink = async (
   throw new Error(response.message || "Error al crear el enlace");
 };
 
-/**
- * PUT /api/me/social-links
- * Actualiza un enlace social (el ID va en el body)
- */
 const updateSocialLink = async (
   updatedData: SocialLinkUpdateRequest
 ): Promise<SocialLinkDto> => {
@@ -56,10 +46,6 @@ const updateSocialLink = async (
   throw new Error(response.message || "Error al actualizar el enlace");
 };
 
-/**
- * DELETE /api/me/social-links/{id}
- * Elimina un enlace social
- */
 const deleteSocialLink = async (id: number): Promise<void> => {
   const { data: response } = await apiClient.delete<ApiResponse<void>>(
     `/me/social-links/${id}`
@@ -69,24 +55,18 @@ const deleteSocialLink = async (id: number): Promise<void> => {
   }
 };
 
-// --- REACT QUERY HOOKS ---
+// --- HOOKS ---
 
-/**
- * Hook para obtener la lista de enlaces sociales del usuario.
- */
 export const useMySocialLinks = () => {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   return useQuery({
     queryKey: SOCIAL_LINKS_QUERY_KEY,
     queryFn: getMySocialLinks,
     enabled: !!isAuthenticated,
-    staleTime: 1000 * 60 * 5, // 5 minutos
+    staleTime: 1000 * 60 * 5,
   });
 };
 
-/**
- * Hook (Mutación) para CREAR un nuevo enlace social.
- */
 export const useCreateSocialLink = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -97,9 +77,6 @@ export const useCreateSocialLink = () => {
   });
 };
 
-/**
- * Hook (Mutación) para ACTUALIZAR un enlace social.
- */
 export const useUpdateSocialLink = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -110,9 +87,6 @@ export const useUpdateSocialLink = () => {
   });
 };
 
-/**
- * Hook (Mutación) para ELIMINAR un enlace social.
- */
 export const useDeleteSocialLink = () => {
   const queryClient = useQueryClient();
   return useMutation({
