@@ -1,10 +1,10 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { Suspense } from "react"; // Quitamos 'lazy' de aquí, ya no lo usamos directo
-import { PublicLayout } from "../components/layouts/PublicLayout";
-import { PrivateLayout } from "../components/layouts/PrivateLayout";
+import { PublicLayout } from "../components/layout/PublicLayout";
+import { PrivateLayout } from "../components/layout/PrivateLayout";
 import PublicRoute from "./PublicRoute";
 import PrivateRoute from "./PrivateRoute";
-import { Loader } from "../components/common/Loader";
+import { Loader } from "../components/shared/Loader";
 import { lazyWithDelay } from "../utils/lazyWithDelay";
 
 const HomePage = lazyWithDelay(() => import("../pages/public/HomePage"));

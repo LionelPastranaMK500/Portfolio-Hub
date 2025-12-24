@@ -1,8 +1,8 @@
 // src/layouts/PublicLayout.tsx
 import { Outlet } from "react-router-dom";
-import { Header } from "../includes/Header";
-import { Footer } from "../includes/Footer";
-import { ParticlesBackground } from "../includes/ParticlesBackground";
+import { Header } from "./Header";
+import { Footer } from "./Footer";
+import { ParticlesBackground } from "../shared/ParticlesBackground";
 
 export function PublicLayout() {
   return (

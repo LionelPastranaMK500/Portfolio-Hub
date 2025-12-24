@@ -11,7 +11,7 @@ import {
   FaCode,
 } from "react-icons/fa";
 import Tilt from "react-parallax-tilt";
-import { SEO } from "../../components/common/SEO";
+import { SEO } from "../../components/shared/SEO";
 
 export default function ProjectDetailPage() {
   const { profileSlug, projectSlug } = useParams<{

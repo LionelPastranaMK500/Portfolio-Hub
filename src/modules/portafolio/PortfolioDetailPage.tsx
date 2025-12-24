@@ -23,7 +23,7 @@ import {
   FaGithub,
   FaLinkedin,
 } from "react-icons/fa";
-import { SEO } from "../../components/common/SEO";
+import { SEO } from "../../components/shared/SEO";
 
 // ==========================================
 // --- SECCIÓN HERO (Perfil y Redes) ---

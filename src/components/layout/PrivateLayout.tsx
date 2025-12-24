@@ -1,6 +1,6 @@
 // src/layouts/PrivateLayout.tsx
 import { Outlet } from "react-router-dom";
-import { Sidebar } from "../includes/Sidebar";
+import { Sidebar } from "./Sidebar";
 
 export function PrivateLayout() {
   return (

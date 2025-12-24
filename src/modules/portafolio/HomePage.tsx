@@ -4,7 +4,7 @@ import { usePublicPortfolios } from "../../services/publicPortfolio.service";
 import type { PortfolioPublicDto } from "../../types/portfolio";
 import { FaSpinner, FaExclamationTriangle, FaUser } from "react-icons/fa";
 import Tilt from "react-parallax-tilt";
-import { SEO } from "../../components/common/SEO";
+import { SEO } from "../../components/shared/SEO";
 
 /**
  * Componente Tarjeta para mostrar un resumen del portafolio.
