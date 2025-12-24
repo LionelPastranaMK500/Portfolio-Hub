@@ -12,7 +12,6 @@ function App() {
     root.classList.add(theme);
   }, [theme]);
 
-  // AppRoutes ya contiene todo el enrutamiento y layouts
   return <AppRoutes />;
 }
 

@@ -1,4 +1,3 @@
-// src/services/projectService.ts
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import apiClient from "../config/api";
 import type { ApiResponse } from "../types/ApiResponse";
@@ -15,77 +14,58 @@ export const PROJECTS_QUERY_KEY = ["projects"];
 
 // --- API FUNCTIONS ---
 
-/**
- * GET /api/me/projects
- * Obtiene TODOS los proyectos del usuario
- */
 export const getMyProjects = async (): Promise<ProjectDto[]> => {
+  // CORRECCIÓN: /api added
   const { data: response } = await apiClient.get<ApiResponse<ProjectDto[]>>(
-    "/me/projects"
+    "/api/me/projects"
   );
   if (response.success) return response.data;
   throw new Error(response.message || "Error al obtener proyectos");
 };
 
-/**
- * GET /api/me/projects/{id}
- * Obtiene un proyecto específico por ID
- */
 export const getProjectById = async (id: number): Promise<ProjectDto> => {
+  // CORRECCIÓN: /api added
   const { data: response } = await apiClient.get<ApiResponse<ProjectDto>>(
-    `/me/projects/${id}`
+    `/api/me/projects/${id}`
   );
   if (response.success) return response.data;
   throw new Error(response.message || "Error al obtener el proyecto");
 };
 
-/**
- * POST /api/me/projects
- * Crea un nuevo proyecto
- */
 export const createProject = async (
   newData: ProjectCreateRequest
 ): Promise<ProjectDto> => {
+  // CORRECCIÓN: /api added
   const { data: response } = await apiClient.post<ApiResponse<ProjectDto>>(
-    "/me/projects",
+    "/api/me/projects",
     newData
   );
   if (response.success) return response.data;
   throw new Error(response.message || "Error al crear el proyecto");
 };
 
-/**
- * PUT /api/me/projects
- * Actualiza un proyecto (el ID va en el body)
- */
 export const updateProject = async (
   updatedData: ProjectUpdateRequest
 ): Promise<ProjectDto> => {
+  // CORRECCIÓN: /api added
   const { data: response } = await apiClient.put<ApiResponse<ProjectDto>>(
-    "/me/projects",
+    "/api/me/projects",
     updatedData
   );
   if (response.success) return response.data;
   throw new Error(response.message || "Error al actualizar el proyecto");
 };
 
-/**
- * DELETE /api/me/projects/{id}
- * Elimina un proyecto
- */
 export const deleteProject = async (id: number): Promise<void> => {
+  // CORRECCIÓN: /api added
   const { data: response } = await apiClient.delete<ApiResponse<void>>(
-    `/me/projects/${id}`
+    `/api/me/projects/${id}`
   );
   if (!response.success) {
     throw new Error(response.message || "Error al eliminar el proyecto");
   }
 };
 
-/**
- * POST /api/me/projects/{projectId}/skills
- * Asocia una lista de IDs de Skills a un proyecto
- */
 export const associateSkills = async ({
   projectId,
   skillIds,
@@ -94,66 +74,52 @@ export const associateSkills = async ({
   skillIds: number[];
 }): Promise<ProjectDto> => {
   const payload: ProjectSkillAssociationRequest = { skillIds };
+  // CORRECCIÓN: /api added
   const { data: response } = await apiClient.post<ApiResponse<ProjectDto>>(
-    `/me/projects/${projectId}/skills`,
+    `/api/me/projects/${projectId}/skills`,
     payload
   );
   if (response.success) return response.data;
   throw new Error(response.message || "Error al asociar skills");
 };
 
-// --- REACT QUERY HOOKS ---
+// --- REACT QUERY HOOKS (Sin cambios) ---
 
-/**
- * Hook para obtener la lista de proyectos del usuario.
- */
 export const useMyProjects = () => {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   return useQuery({
     queryKey: PROJECTS_QUERY_KEY,
     queryFn: getMyProjects,
     enabled: !!isAuthenticated,
-    staleTime: 1000 * 60 * 5, // 5 minutos
+    staleTime: 1000 * 60 * 5,
   });
 };
 
-/**
- * Hook para obtener los detalles de un solo proyecto por ID.
- */
 export const useProject = (projectId: number) => {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   return useQuery({
     queryKey: [PROJECTS_QUERY_KEY, "detail", projectId],
     queryFn: () => getProjectById(projectId),
-    enabled: !!isAuthenticated && !!projectId, // Solo si está logueado Y hay un ID
+    enabled: !!isAuthenticated && !!projectId,
   });
 };
 
-/**
- * Hook (Mutación) para CREAR un nuevo proyecto.
- */
 export const useCreateProject = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createProject,
     onSuccess: () => {
-      // Refresca la lista de proyectos
       queryClient.invalidateQueries({ queryKey: PROJECTS_QUERY_KEY });
     },
   });
 };
 
-/**
- * Hook (Mutación) para ACTUALIZAR un proyecto.
- */
 export const useUpdateProject = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updateProject,
     onSuccess: (updatedProject) => {
-      // Refresca la lista de proyectos
       queryClient.invalidateQueries({ queryKey: PROJECTS_QUERY_KEY });
-      // También refresca el detalle de ESE proyecto
       queryClient.invalidateQueries({
         queryKey: [PROJECTS_QUERY_KEY, "detail", updatedProject.id],
       });
@@ -161,9 +127,6 @@ export const useUpdateProject = () => {
   });
 };
 
-/**
- * Hook (Mutación) para ELIMINAR un proyecto.
- */
 export const useDeleteProject = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -174,17 +137,12 @@ export const useDeleteProject = () => {
   });
 };
 
-/**
- * Hook (Mutación) para ASOCIAR SKILLS a un proyecto.
- */
 export const useAssociateSkills = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: associateSkills,
     onSuccess: (updatedProject) => {
-      // Refresca la lista de proyectos (porque 'skills' puede estar allí)
       queryClient.invalidateQueries({ queryKey: PROJECTS_QUERY_KEY });
-      // Refresca el detalle de ESE proyecto
       queryClient.invalidateQueries({
         queryKey: [PROJECTS_QUERY_KEY, "detail", updatedProject.id],
       });

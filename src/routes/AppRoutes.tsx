@@ -5,7 +5,6 @@ import { PrivateLayout } from "../components/layouts/PrivateLayout";
 import PublicRoute from "./PublicRoute";
 import PrivateRoute from "./PrivateRoute";
 import { Loader } from "../components/common/Loader";
-
 import { lazyWithDelay } from "../utils/lazyWithDelay";
 
 const HomePage = lazyWithDelay(() => import("../pages/public/HomePage"));

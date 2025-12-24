@@ -1,8 +1,8 @@
 // src/services/auth/authStore.ts
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import apiClient from "../../config/api"; // El que creamos en el paso 1
-import type { ApiResponse } from "../..//types/ApiResponse";
+import apiClient from "../../config/api";
+import type { ApiResponse } from "../../types/ApiResponse";
 import type { User } from "../../types/User";
 import type {
   LoginCredentials,
@@ -10,7 +10,6 @@ import type {
   AuthResponse,
 } from "../../types/auth/Auth";
 
-// Definimos la forma de nuestro estado de autenticación
 interface AuthState {
   user: User | null;
   accessToken: string | null;
@@ -32,48 +31,45 @@ export const useAuthStore = create<AuthState>()(
       // --- ACCIÓN: LOGIN ---
       login: async (credentials: LoginCredentials) => {
         try {
-          // 1. Pide el token a /api/auth/login
+          // CORRECCIÓN: Se cambió "apí" por "api"
           const { data: response } = await apiClient.post<
             ApiResponse<AuthResponse>
-          >("/auth/login", credentials);
+          >("/api/auth/login", credentials);
 
           if (response.success && response.data.token) {
             const token = response.data.token;
 
-            // 2. Guarda el token en el estado y en el header de Axios
             set({ accessToken: token, isAuthenticated: true });
             apiClient.defaults.headers.common[
               "Authorization"
             ] = `Bearer ${token}`;
 
-            // 3. Busca los datos del usuario con el nuevo token
+            // Intentamos obtener el usuario, pero si falla no bloqueamos el login inmediatamente aquí,
+            // el manejo de errores interno de fetchUser decidirá.
             await get().fetchUser();
           } else {
             throw new Error(response.message || "Error al iniciar sesión");
           }
         } catch (error) {
-          get().logout(); // Limpia todo si falla
-          throw error; // Lanza el error para que el formulario lo muestre
+          get().logout();
+          throw error;
         }
       },
 
       // --- ACCIÓN: REGISTRO ---
       register: async (credentials: RegisterCredentials) => {
         try {
-          // 1. Registra al usuario en /api/auth/register
           const { data: response } = await apiClient.post<
             ApiResponse<AuthResponse>
-          >("/auth/register", credentials);
+          >("/api/auth/register", credentials);
 
           if (response.success && response.data.token) {
-            // 2. Si el registro es exitoso, logueamos al usuario inmediatamente
             const token = response.data.token;
             set({ accessToken: token, isAuthenticated: true });
             apiClient.defaults.headers.common[
               "Authorization"
             ] = `Bearer ${token}`;
 
-            // 3. Busca los datos del usuario
             await get().fetchUser();
           } else {
             throw new Error(response.message || "Error en el registro");
@@ -87,21 +83,28 @@ export const useAuthStore = create<AuthState>()(
       // --- ACCIÓN: OBTENER DATOS DEL USUARIO ---
       fetchUser: async () => {
         try {
-          // Llama a /api/me/profile (endpoint protegido)
           const { data: response } = await apiClient.get<ApiResponse<User>>(
-            "/me/profile"
+            "/api/me/profile"
           );
 
           if (response.success && response.data) {
-            // Guarda los datos del perfil (ProfileDto) en el estado
             set({ user: response.data, isAuthenticated: true });
           } else {
-            // Si la API devuelve success: false
-            throw new Error(response.message);
+            // Si la API responde pero success es false (ej. token inválido lógico)
+            console.error("Error API Profile:", response.message);
+            // Opcional: Si el backend dice "Token inválido", podríamos cerrar sesión aquí.
           }
-        } catch (error) {
+        } catch (error: any) {
           console.error("Error al obtener el perfil:", error);
-          get().logout(); // Cierra sesión si no se pueden obtener los datos
+
+          // CORRECCIÓN CLAVE: Solo cerrar sesión si es error de autenticación (401/403)
+          // Si es error de red (500, Network Error), NO cerramos sesión para no "botar" al usuario.
+          if (
+            error.response?.status === 401 ||
+            error.response?.status === 403
+          ) {
+            get().logout();
+          }
         }
       },
 
@@ -116,28 +119,21 @@ export const useAuthStore = create<AuthState>()(
       },
     }),
     {
-      // --- CONFIGURACIÓN DE PERSISTENCIA ---
-      name: "auth-storage", // Nombre en localStorage
+      name: "auth-storage",
       storage: createJSONStorage(() => localStorage),
-
-      // Solo persistimos el token, no los datos del usuario
       partialize: (state) => ({
         accessToken: state.accessToken,
       }),
-
-      // Función que se ejecuta al recargar la página
       onRehydrateStorage: () => (state, error) => {
         if (error) {
           console.error("Error al rehidratar el auth store:", error);
           state?.logout();
         } else if (state?.accessToken) {
-          // Si hay un token guardado, ponerlo en Axios
           apiClient.defaults.headers.common[
             "Authorization"
           ] = `Bearer ${state.accessToken}`;
           state.isAuthenticated = true;
-
-          // E intentar obtener los datos frescos del usuario
+          // Intentar refrescar datos al recargar página
           setTimeout(() => {
             state.fetchUser();
           }, 1);

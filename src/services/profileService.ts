@@ -7,7 +7,6 @@ import { useAuthStore } from "../services/auth/authStore";
 
 export const MY_PROFILE_QUERY_KEY = ["myProfile"];
 
-// --- Tipos para la actualización (Coincide con el Backend ProfileUpdateRequest) ---
 export interface ProfileUpdateRequest {
   fullName: string;
   headline: string;
@@ -19,8 +18,9 @@ export interface ProfileUpdateRequest {
 // --- API FUNCTIONS ---
 
 const fetchMyProfile = async (): Promise<User> => {
+  // Mantenemos la ruta consistente con authStore
   const { data: response } = await apiClient.get<ApiResponse<User>>(
-    "/me/profile"
+    "/api/me/profile"
   );
   if (response.success) return response.data;
   throw new Error(response.message || "Error al obtener perfil");
@@ -28,7 +28,7 @@ const fetchMyProfile = async (): Promise<User> => {
 
 const updateMyProfile = async (data: ProfileUpdateRequest): Promise<User> => {
   const { data: response } = await apiClient.put<ApiResponse<User>>(
-    "/me/profile",
+    "/api/me/profile",
     data
   );
   if (response.success) return response.data;
@@ -55,7 +55,7 @@ export const useUpdateProfile = () => {
       // 1. Actualizamos la caché de React Query
       queryClient.setQueryData(MY_PROFILE_QUERY_KEY, updatedUser);
 
-      // 2. (Opcional) Actualizamos el store de Auth si usas los datos ahí
+      // 2. Actualizamos el store de Auth para mantener sincronía
       useAuthStore.getState().fetchUser();
     },
   });

@@ -1,4 +1,3 @@
-// src/services/certificateService.ts
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import apiClient from "../config/api";
 import type { ApiResponse } from "../types/ApiResponse";
@@ -9,7 +8,6 @@ import type {
 } from "../types/certificate";
 import { useAuthStore } from "./auth/authStore";
 
-// --- RE-EXPORTACIÓN DE TIPOS ---
 export type {
   CertificateDto,
   CertificateCreateRequest,
@@ -21,8 +19,9 @@ export const CERTIFICATES_QUERY_KEY = ["certificates"];
 // --- API FUNCTIONS ---
 
 const getMyCertificates = async (): Promise<CertificateDto[]> => {
+  // CORRECCIÓN: /api added
   const { data: response } = await apiClient.get<ApiResponse<CertificateDto[]>>(
-    "/me/certificates"
+    "/api/me/certificates"
   );
   if (response.success) return response.data;
   throw new Error(response.message || "Error al obtener certificados");
@@ -31,8 +30,9 @@ const getMyCertificates = async (): Promise<CertificateDto[]> => {
 const createCertificate = async (
   newData: CertificateCreateRequest
 ): Promise<CertificateDto> => {
+  // CORRECCIÓN: /api added
   const { data: response } = await apiClient.post<ApiResponse<CertificateDto>>(
-    "/me/certificates",
+    "/api/me/certificates",
     newData
   );
   if (response.success) return response.data;
@@ -42,8 +42,9 @@ const createCertificate = async (
 const updateCertificate = async (
   updatedData: CertificateUpdateRequest
 ): Promise<CertificateDto> => {
+  // CORRECCIÓN: /api added
   const { data: response } = await apiClient.put<ApiResponse<CertificateDto>>(
-    "/me/certificates",
+    "/api/me/certificates",
     updatedData
   );
   if (response.success) return response.data;
@@ -51,15 +52,15 @@ const updateCertificate = async (
 };
 
 const deleteCertificate = async (id: number): Promise<void> => {
+  // CORRECCIÓN: /api added
   const { data: response } = await apiClient.delete<ApiResponse<void>>(
-    `/me/certificates/${id}`
+    `/api/me/certificates/${id}`
   );
   if (!response.success) {
     throw new Error(response.message || "Error al eliminar el certificado");
   }
 };
 
-// (Opcional) Subida de archivo - Lo dejaremos preparado
 const uploadCertificateFile = async ({
   certificateId,
   file,
@@ -70,8 +71,9 @@ const uploadCertificateFile = async ({
   const formData = new FormData();
   formData.append("file", file);
 
+  // CORRECCIÓN: /api added
   const { data: response } = await apiClient.post<ApiResponse<CertificateDto>>(
-    `/me/upload/certificate/${certificateId}/file`,
+    `/api/me/upload/certificate/${certificateId}/file`,
     formData,
     {
       headers: { "Content-Type": "multipart/form-data" },
@@ -81,7 +83,7 @@ const uploadCertificateFile = async ({
   throw new Error(response.message || "Error al subir el archivo");
 };
 
-// --- HOOKS ---
+// --- HOOKS (Sin cambios) ---
 
 export const useMyCertificates = () => {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);

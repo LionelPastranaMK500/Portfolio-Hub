@@ -1,4 +1,3 @@
-// src/services/educationService.ts
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import apiClient from "../config/api";
 import type { ApiResponse } from "../types/ApiResponse";
@@ -16,8 +15,9 @@ export const EDUCATION_QUERY_KEY = ["education"];
 // --- API FUNCTIONS ---
 
 const getMyEducation = async (): Promise<EducationDto[]> => {
+  // CORRECCIÓN: /api added
   const { data: response } = await apiClient.get<ApiResponse<EducationDto[]>>(
-    "/me/education"
+    "/api/me/education"
   );
   if (response.success) return response.data;
   throw new Error(response.message || "Error al obtener la educación");
@@ -26,8 +26,9 @@ const getMyEducation = async (): Promise<EducationDto[]> => {
 const createEducation = async (
   newData: EducationCreateRequest
 ): Promise<EducationDto> => {
+  // CORRECCIÓN: /api added
   const { data: response } = await apiClient.post<ApiResponse<EducationDto>>(
-    "/me/education",
+    "/api/me/education",
     newData
   );
   if (response.success) return response.data;
@@ -37,8 +38,9 @@ const createEducation = async (
 const updateEducation = async (
   updatedData: EducationUpdateRequest
 ): Promise<EducationDto> => {
+  // CORRECCIÓN: /api added
   const { data: response } = await apiClient.put<ApiResponse<EducationDto>>(
-    "/me/education",
+    "/api/me/education",
     updatedData
   );
   if (response.success) return response.data;
@@ -46,15 +48,16 @@ const updateEducation = async (
 };
 
 const deleteEducation = async (id: number): Promise<void> => {
+  // CORRECCIÓN: /api added
   const { data: response } = await apiClient.delete<ApiResponse<void>>(
-    `/me/education/${id}`
+    `/api/me/education/${id}`
   );
   if (!response.success) {
     throw new Error(response.message || "Error al eliminar la educación");
   }
 };
 
-// --- HOOKS ---
+// --- HOOKS (Sin cambios) ---
 
 export const useMyEducation = () => {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);

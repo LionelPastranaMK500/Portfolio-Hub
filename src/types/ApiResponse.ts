@@ -3,5 +3,5 @@ export interface ApiResponse<T> {
   success: boolean;
   message: string;
   data: T;
-  timestamp: string; // o Date
+  timestamp: string; 
 }
