@@ -1,8 +1,8 @@
 // src/modules/auth/LoginPage.tsx
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "../../services/auth/authStore";
-import type { LoginFormValues } from "../../types/auth/LoginSchema";
+import { useAuthStore } from "../../store/authStore";
+import type { LoginFormValues } from "../../types/schemas/LoginSchema";
 import { LoginForm } from "./components/LoginForm";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";

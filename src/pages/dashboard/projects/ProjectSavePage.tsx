@@ -7,7 +7,7 @@ import {
   useUpdateProject,
   useProject,
 } from "../../../services/projectService";
-import type { ProjectCreateRequest } from "../../../types/project";
+import type { ProjectCreateRequest } from "../../../types/models/project";
 import { toast } from "react-toastify";
 import { FaSave, FaArrowLeft, FaSpinner } from "react-icons/fa";
 

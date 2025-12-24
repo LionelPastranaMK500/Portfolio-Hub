@@ -1,6 +1,6 @@
 // src/pages/public/ProjectDetailPage.tsx
 import { useParams, Link } from "react-router-dom";
-import { usePublicProjectDetail } from "../../services/publicPortfolioService";
+import { usePublicProjectDetail } from "../../services/publicPortfolio.service";
 import {
   FaGithub,
   FaExternalLinkAlt,

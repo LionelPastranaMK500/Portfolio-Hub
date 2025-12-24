@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import {
   useMySocialLinks,
   useDeleteSocialLink,
-} from "../../../services/socialLinkService";
+} from "../../../services/socialLink.service";
 import {
   FaPlus,
   FaEdit,

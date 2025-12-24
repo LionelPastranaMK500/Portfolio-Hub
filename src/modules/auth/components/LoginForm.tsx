@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   loginSchema,
   type LoginFormValues,
-} from "../../../types/auth/LoginSchema";
+} from "../../../types/schemas/LoginSchema";
 import { Link } from "react-router-dom";
 import Tilt from "react-parallax-tilt";
 import { FiLogIn } from "react-icons/fi";

@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   registerSchema,
   type RegisterFormValues,
-} from "../../../types/auth/RegisterSchema";
+} from "../../../types/schemas/RegisterSchema";
 import { Link } from "react-router-dom";
 import Tilt from "react-parallax-tilt";
 import { FaUserPlus, FaSpinner } from "react-icons/fa";

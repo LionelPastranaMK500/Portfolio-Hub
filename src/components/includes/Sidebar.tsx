@@ -1,6 +1,6 @@
 // src/components/layout/Sidebar.tsx
 import { NavLink, useNavigate } from "react-router-dom";
-import { useAuthStore } from "../../services/auth/authStore";
+import { useAuthStore } from "../../store/authStore";
 
 // --- NUEVOS ICONOS DE REACT-ICONS ---
 import {

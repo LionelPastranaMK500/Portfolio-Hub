@@ -1,6 +1,6 @@
 // src/routes/PublicRoute.tsx
 import { Navigate, Outlet } from "react-router-dom";
-import { useAuthStore } from "../services/auth/authStore";
+import { useAuthStore } from "../store/authStore";
 
 /**
  * Este componente envuelve las rutas PÚBLICAS (Login, Register).

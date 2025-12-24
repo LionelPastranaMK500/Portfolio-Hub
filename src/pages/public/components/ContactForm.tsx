@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { useSendContactMessage } from "../../../services/publicPortfolioService";
+import { useSendContactMessage } from "../../../services/publicPortfolio.service";
 import { toast } from "react-toastify";
 import { FaPaperPlane, FaSpinner } from "react-icons/fa";
 import type { ContactRequest } from "../../../types/Contact";

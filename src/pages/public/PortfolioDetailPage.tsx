@@ -1,13 +1,13 @@
 import { useParams, Link } from "react-router-dom";
-import { usePortfolioDetail } from "../../services/publicPortfolioService";
+import { usePortfolioDetail } from "../../services/publicPortfolio.service";
 import type {
   PortfolioDetailDto,
   ProjectSummaryDto,
 } from "../../types/portfolio";
-import type { SkillCategoryDto } from "../../types/skillCategory";
-import type { ExperienceDto } from "../../types/experience";
-import type { EducationDto } from "../../types/education";
-import type { CertificateDto } from "../../types/certificate";
+import type { SkillCategoryDto } from "../../types/models/skillCategory";
+import type { ExperienceDto } from "../../types/models/experience";
+import type { EducationDto } from "../../types/models/education";
+import type { CertificateDto } from "../../types/models/certificate";
 import { ContactForm } from "./components/ContactForm";
 import {
   FaSpinner,

@@ -1,8 +1,8 @@
 // src/modules/auth/RegisterPage.tsx
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "../../services/auth/authStore";
-import type { RegisterFormValues } from "../../types/auth/RegisterSchema";
+import { useAuthStore } from "../../store/authStore";
+import type { RegisterFormValues } from "../../types/schemas/RegisterSchema";
 import { RegisterForm } from "./components/RegisterForm";
 
 import { ToastContainer, toast } from "react-toastify";

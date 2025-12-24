@@ -5,7 +5,7 @@ import {
   useMyProfile,
   useUpdateProfile,
   type ProfileUpdateRequest,
-} from "../../services/profileService";
+} from "../../services/project.service";
 import { toast } from "react-toastify";
 import { FaSave, FaSpinner, FaUserCircle } from "react-icons/fa";
 

@@ -1,6 +1,6 @@
 // src/routes/ProtectedRoute.tsx
 import { Navigate, Outlet } from "react-router-dom";
-import { useAuthStore } from "../services/auth/authStore"; // <-- Importa el store real
+import { useAuthStore } from "../store/authStore"; // <-- Importa el store real
 
 // --- Borramos el Placeholder Temporal ---
 

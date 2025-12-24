@@ -7,7 +7,7 @@ import {
   useUpdateSocialLink,
   useMySocialLinks,
   type SocialLinkCreateRequest,
-} from "../../../services/socialLinkService";
+} from "../../../services/socialLink.service";
 import { toast } from "react-toastify";
 import { FaSave, FaArrowLeft, FaSpinner } from "react-icons/fa";
 

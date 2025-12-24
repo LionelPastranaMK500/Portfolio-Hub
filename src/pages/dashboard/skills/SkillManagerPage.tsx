@@ -23,7 +23,7 @@ import {
   type SkillDto,
   type SkillCategoryCreateRequest,
   type SkillCreateRequest,
-} from "../../../services/skillService";
+} from "../../../services/skill.service";
 
 // --- COMPONENTE MODAL SIMPLE ---
 const Modal = ({ isOpen, onClose, title, children }: any) => {

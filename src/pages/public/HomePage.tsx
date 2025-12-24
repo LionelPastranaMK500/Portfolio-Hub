@@ -1,6 +1,6 @@
 // src/pages/public/HomePage.tsx
 import { Link } from "react-router-dom";
-import { usePublicPortfolios } from "../../services/publicPortfolioService";
+import { usePublicPortfolios } from "../../services/publicPortfolio.service";
 import type { PortfolioPublicDto } from "../../types/portfolio";
 import { FaSpinner, FaExclamationTriangle, FaUser } from "react-icons/fa";
 import Tilt from "react-parallax-tilt";

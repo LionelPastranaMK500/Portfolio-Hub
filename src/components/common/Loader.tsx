@@ -3,8 +3,6 @@ import { createPortal } from "react-dom";
 import "../../styles/Loader.css";
 
 export const Loader = () => {
-  // Usamos createPortal para renderizar fuera de la jerarquía del DOM actual
-  // y colocarlo directamente en el body.
   return createPortal(
     <div className="loader-overlay">
       <div className="loader-wrapper">

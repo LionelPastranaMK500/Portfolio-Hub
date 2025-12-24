@@ -1,6 +1,6 @@
 // src/routes/PrivateRoute.tsx
 import { Navigate, Outlet } from "react-router-dom";
-import { useAuthStore } from "../services/auth/authStore";
+import { useAuthStore } from "../store/authStore";
 
 interface PrivateRouteProps {
   allowedRoles?: string[]; // Opcional: Lista de roles permitidos

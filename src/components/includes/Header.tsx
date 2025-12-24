@@ -1,7 +1,7 @@
 // src/components/includes/Header.tsx
 import { Link, useLocation } from "react-router-dom"; // 1. Importamos useLocation
 import { useThemeStore } from "../../store/themeStore";
-import { useAuthStore } from "../../services/auth/authStore";
+import { useAuthStore } from "../../store/authStore";
 
 import { IoMoon, IoSunny } from "react-icons/io5";
 import { MdDashboard } from "react-icons/md";
