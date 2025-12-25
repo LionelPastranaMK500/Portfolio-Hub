@@ -1,7 +1,7 @@
 // src/App.tsx
 import { useEffect } from "react";
 import { useThemeStore } from "./store/themeStore";
-import AppRoutes from "./routes/AppRoutes"; // <-- Importamos el componente que acabamos de hacer
+import AppRoutes from "./routes/AppRoutes";
 
 function App() {
   const theme = useThemeStore((state) => state.theme);

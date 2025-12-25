@@ -1,12 +1,18 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import { Suspense } from "react"; // Quitamos 'lazy' de aquí, ya no lo usamos directo
+// import { Suspense } from "react";
 import { PublicLayout } from "../components/layout/PublicLayout";
-import { PrivateLayout } from "../components/layout/PrivateLayout";
-import PublicRoute from "./PublicRoute";
-import PrivateRoute from "./PrivateRoute";
-import { Loader } from "../components/shared/Loader";
-import { lazyWithDelay } from "../utils/lazyWithDelay";
+// import { PrivateLayout } from "../components/layout/PrivateLayout";
+// import PublicRoute from "./PublicRoute";
+// import PrivateRoute from "./PrivateRoute";
+// import { Loader } from "../components/shared/Loader";
+// import { lazyWithDelay } from "../utils/lazyWithDelay";
 
+// --- MÓDULO LANDING (Activo) ---
+import { LandingPage } from "../modules/landing/LandingPage";
+
+// --- COMPONENTES COMENTADOS HASTA COMPLETAR LA MIGRACIÓN A MODULES ---
+
+/*
 const HomePage = lazyWithDelay(() => import("../pages/public/HomePage"));
 const PortfolioDetailPage = lazyWithDelay(
   () => import("../pages/public/PortfolioDetailPage")
@@ -59,18 +65,24 @@ const DashboardSocials = lazyWithDelay(
 const DashboardSocialSave = lazyWithDelay(
   () => import("../pages/dashboard/socials/SocialLinkSavePage")
 );
+*/
 
 const AppRoutes = () => {
   return (
     <Routes>
-      {/* ... RUTAS PÚBLICAS ... */}
+      {/* RUTA RAÍZ: La Landing Page de Studios TKOH! (ACTIVA) */}
+      <Route element={<PublicLayout />}>
+        <Route path="/" element={<LandingPage />} />
+      </Route>
+
+      {/* --- RUTAS PÚBLICAS Y DE AUTH (COMENTADAS) --- */}
+      {/*
       <Route element={<PublicRoute />}>
         <Route element={<PublicLayout />}>
           <Route
             path="/login"
             element={
               <Suspense fallback={<Loader />}>
-                {" "}
                 <LoginPage />
               </Suspense>
             }
@@ -88,7 +100,7 @@ const AppRoutes = () => {
 
       <Route element={<PublicLayout />}>
         <Route
-          path="/"
+          path="/home"
           element={
             <Suspense fallback={<Loader />}>
               <HomePage />
@@ -120,8 +132,10 @@ const AppRoutes = () => {
           }
         />
       </Route>
+      */}
 
-      {/* ... RUTAS PRIVADAS ... */}
+      {/* --- RUTAS PRIVADAS / DASHBOARD (COMENTADAS) --- */}
+      {/*
       <Route element={<PrivateRoute />}>
         <Route element={<PrivateLayout />}>
           <Route
@@ -129,7 +143,6 @@ const AppRoutes = () => {
             element={<Navigate to="/dashboard/profile" replace />}
           />
 
-          {/* PERFIL */}
           <Route
             path="/dashboard/profile"
             element={
@@ -139,7 +152,6 @@ const AppRoutes = () => {
             }
           />
 
-          {/* PROYECTOS */}
           <Route
             path="/dashboard/projects"
             element={
@@ -165,7 +177,6 @@ const AppRoutes = () => {
             }
           />
 
-          {/* EXPERIENCIA */}
           <Route
             path="/dashboard/experience"
             element={
@@ -191,7 +202,6 @@ const AppRoutes = () => {
             }
           />
 
-          {/* EDUCACIÓN */}
           <Route
             path="/dashboard/education"
             element={
@@ -217,7 +227,6 @@ const AppRoutes = () => {
             }
           />
 
-          {/* SKILLS */}
           <Route
             path="/dashboard/skills"
             element={
@@ -227,7 +236,6 @@ const AppRoutes = () => {
             }
           />
 
-          {/* CERTIFICADOS */}
           <Route
             path="/dashboard/certificates"
             element={
@@ -253,7 +261,6 @@ const AppRoutes = () => {
             }
           />
 
-          {/* REDES SOCIALES */}
           <Route
             path="/dashboard/socials"
             element={
@@ -280,6 +287,7 @@ const AppRoutes = () => {
           />
         </Route>
       </Route>
+      */}
     </Routes>
   );
 };
