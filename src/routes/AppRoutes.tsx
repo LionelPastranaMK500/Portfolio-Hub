@@ -1,84 +1,81 @@
-import { Routes, Route, Navigate } from "react-router-dom";
-// import { Suspense } from "react";
+import { Routes, Route } from "react-router-dom";
+import { Suspense } from "react";
 import { PublicLayout } from "../components/layout/PublicLayout";
-// import { PrivateLayout } from "../components/layout/PrivateLayout";
-// import PublicRoute from "./PublicRoute";
-// import PrivateRoute from "./PrivateRoute";
-// import { Loader } from "../components/shared/Loader";
-// import { lazyWithDelay } from "../utils/lazyWithDelay";
-
-// --- MÓDULO LANDING (Activo) ---
+import { DashboardLayout } from "../components/layout/DashboardLayout";
+import { Loader } from "../components/shared/Loader";
+import { lazyWithDelay } from "../utils/lazyWithDelay";
+import GuestRoute from "./GuestRoute";
+import PrivateRoute from "./PrivateRoute";
 import { LandingPage } from "../modules/landing/LandingPage";
 
-// --- COMPONENTES COMENTADOS HASTA COMPLETAR LA MIGRACIÓN A MODULES ---
-
-/*
-const HomePage = lazyWithDelay(() => import("../pages/public/HomePage"));
+// --- LAZY IMPORTS (Públicos) ---
+const HomePage = lazyWithDelay(() => import("../modules/portafolio/HomePage"));
 const PortfolioDetailPage = lazyWithDelay(
-  () => import("../pages/public/PortfolioDetailPage")
-);
-const ProjectDetailPage = lazyWithDelay(
-  () => import("../pages/public/ProjectDetailPage")
-);
-const NotFoundPage = lazyWithDelay(
-  () => import("../pages/public/NotFoundPage")
+  () => import("../modules/portafolio/PortfolioDetailPage")
 );
 const LoginPage = lazyWithDelay(() => import("../modules/auth/LoginPage"));
 const RegisterPage = lazyWithDelay(
   () => import("../modules/auth/RegisterPage")
 );
 
-// Páginas Privadas
+// --- LAZY IMPORTS (Privados / Admin Dashboard) ---
+const DashboardOverview = lazyWithDelay(
+  () => import("../modules/admin/dashboard/DashboardOverview")
+);
 const DashboardProfile = lazyWithDelay(
-  () => import("../pages/dashboard/ProfilePage")
+  () => import("../modules/admin/profile/ProfilePage")
 );
 const DashboardProjects = lazyWithDelay(
-  () => import("../pages/dashboard/projects/ProjectListPage")
-);
-const DashboardProjectSave = lazyWithDelay(
-  () => import("../pages/dashboard/projects/ProjectSavePage")
-);
-const DashboardExperience = lazyWithDelay(
-  () => import("../pages/dashboard/experience/ExperienceListPage")
-);
-const DashboardExperienceSave = lazyWithDelay(
-  () => import("../pages/dashboard/experience/ExperienceSavePage")
-);
-const DashboardEducation = lazyWithDelay(
-  () => import("../pages/dashboard/education/EducationListPage")
-);
-const DashboardEducationSave = lazyWithDelay(
-  () => import("../pages/dashboard/education/EducationSavePage")
+  () => import("../modules/admin/projects/ProjectsPage")
 );
 const DashboardSkills = lazyWithDelay(
-  () => import("../pages/dashboard/skills/SkillManagerPage")
+  () => import("../modules/admin/skills/SkillsPage")
+);
+const DashboardEducation = lazyWithDelay(
+  () => import("../modules/admin/education/EducationPage")
+);
+const DashboardExperience = lazyWithDelay(
+  () => import("../modules/admin/experience/ExperiencePage")
 );
 const DashboardCertificates = lazyWithDelay(
-  () => import("../pages/dashboard/certificates/CertificateListPage")
+  () => import("../modules/admin/certificates/CertificatesPage")
 );
-const DashboardCertificateSave = lazyWithDelay(
-  () => import("../pages/dashboard/certificates/CertificateSavePage")
+const DashboardSocial = lazyWithDelay(
+  () => import("../modules/admin/socials/SocialLinksPage")
 );
-const DashboardSocials = lazyWithDelay(
-  () => import("../pages/dashboard/socials/SocialLinkListPage")
-);
-const DashboardSocialSave = lazyWithDelay(
-  () => import("../pages/dashboard/socials/SocialLinkSavePage")
-);
-*/
 
 const AppRoutes = () => {
   return (
     <Routes>
-      {/* RUTA RAÍZ: La Landing Page de Studios TKOH! (ACTIVA) */}
+      {/* =================================================
+          RUTAS PÚBLICAS (Layout con Header y Footer)
+         ================================================= */}
       <Route element={<PublicLayout />}>
+        {/* Rutas abiertas a todo el mundo */}
         <Route path="/" element={<LandingPage />} />
-      </Route>
 
-      {/* --- RUTAS PÚBLICAS Y DE AUTH (COMENTADAS) --- */}
-      {/*
-      <Route element={<PublicRoute />}>
-        <Route element={<PublicLayout />}>
+        <Route
+          path="/home"
+          element={
+            <Suspense fallback={<Loader />}>
+              <HomePage />
+            </Suspense>
+          }
+        />
+
+        <Route
+          path="/portfolios/:slug"
+          element={
+            <Suspense fallback={<Loader />}>
+              <PortfolioDetailPage />
+            </Suspense>
+          }
+        />
+
+        {/* Rutas "Guest Only" (Login/Register) 
+            Si ya estás logueado, te redirigen al Dashboard.
+        */}
+        <Route element={<GuestRoute />}>
           <Route
             path="/login"
             element={
@@ -98,53 +95,25 @@ const AppRoutes = () => {
         </Route>
       </Route>
 
-      <Route element={<PublicLayout />}>
-        <Route
-          path="/home"
-          element={
-            <Suspense fallback={<Loader />}>
-              <HomePage />
-            </Suspense>
-          }
-        />
-        <Route
-          path="/portfolios/:slug"
-          element={
-            <Suspense fallback={<Loader />}>
-              <PortfolioDetailPage />
-            </Suspense>
-          }
-        />
-        <Route
-          path="/portfolios/:profileSlug/projects/:projectSlug"
-          element={
-            <Suspense fallback={<Loader />}>
-              <ProjectDetailPage />
-            </Suspense>
-          }
-        />
-        <Route
-          path="*"
-          element={
-            <Suspense fallback={<Loader />}>
-              <NotFoundPage />
-            </Suspense>
-          }
-        />
-      </Route>
-      */}
-
-      {/* --- RUTAS PRIVADAS / DASHBOARD (COMENTADAS) --- */}
-      {/*
+      {/* =================================================
+          RUTAS PRIVADAS (Layout Dashboard con Sidebar)
+         ================================================= */}
       <Route element={<PrivateRoute />}>
-        <Route element={<PrivateLayout />}>
+        <Route path="/dashboard" element={<DashboardLayout />}>
+          {/* INDEX: Vista de Resumen */}
           <Route
-            path="/dashboard"
-            element={<Navigate to="/dashboard/profile" replace />}
+            index
+            element={
+              <Suspense fallback={<Loader />}>
+                <DashboardOverview />
+              </Suspense>
+            }
           />
 
+          {/* --- MÓDULOS DE GESTIÓN --- */}
+
           <Route
-            path="/dashboard/profile"
+            path="profile"
             element={
               <Suspense fallback={<Loader />}>
                 <DashboardProfile />
@@ -153,82 +122,16 @@ const AppRoutes = () => {
           />
 
           <Route
-            path="/dashboard/projects"
+            path="projects"
             element={
               <Suspense fallback={<Loader />}>
                 <DashboardProjects />
               </Suspense>
             }
           />
-          <Route
-            path="/dashboard/projects/new"
-            element={
-              <Suspense fallback={<Loader />}>
-                <DashboardProjectSave />
-              </Suspense>
-            }
-          />
-          <Route
-            path="/dashboard/projects/edit/:id"
-            element={
-              <Suspense fallback={<Loader />}>
-                <DashboardProjectSave />
-              </Suspense>
-            }
-          />
 
           <Route
-            path="/dashboard/experience"
-            element={
-              <Suspense fallback={<Loader />}>
-                <DashboardExperience />
-              </Suspense>
-            }
-          />
-          <Route
-            path="/dashboard/experience/new"
-            element={
-              <Suspense fallback={<Loader />}>
-                <DashboardExperienceSave />
-              </Suspense>
-            }
-          />
-          <Route
-            path="/dashboard/experience/edit/:id"
-            element={
-              <Suspense fallback={<Loader />}>
-                <DashboardExperienceSave />
-              </Suspense>
-            }
-          />
-
-          <Route
-            path="/dashboard/education"
-            element={
-              <Suspense fallback={<Loader />}>
-                <DashboardEducation />
-              </Suspense>
-            }
-          />
-          <Route
-            path="/dashboard/education/new"
-            element={
-              <Suspense fallback={<Loader />}>
-                <DashboardEducationSave />
-              </Suspense>
-            }
-          />
-          <Route
-            path="/dashboard/education/edit/:id"
-            element={
-              <Suspense fallback={<Loader />}>
-                <DashboardEducationSave />
-              </Suspense>
-            }
-          />
-
-          <Route
-            path="/dashboard/skills"
+            path="skills"
             element={
               <Suspense fallback={<Loader />}>
                 <DashboardSkills />
@@ -237,57 +140,55 @@ const AppRoutes = () => {
           />
 
           <Route
-            path="/dashboard/certificates"
+            path="experience"
+            element={
+              <Suspense fallback={<Loader />}>
+                <DashboardExperience />
+              </Suspense>
+            }
+          />
+
+          <Route
+            path="education"
+            element={
+              <Suspense fallback={<Loader />}>
+                <DashboardEducation />
+              </Suspense>
+            }
+          />
+
+          <Route
+            path="certificates"
             element={
               <Suspense fallback={<Loader />}>
                 <DashboardCertificates />
               </Suspense>
             }
           />
-          <Route
-            path="/dashboard/certificates/new"
-            element={
-              <Suspense fallback={<Loader />}>
-                <DashboardCertificateSave />
-              </Suspense>
-            }
-          />
-          <Route
-            path="/dashboard/certificates/edit/:id"
-            element={
-              <Suspense fallback={<Loader />}>
-                <DashboardCertificateSave />
-              </Suspense>
-            }
-          />
 
           <Route
-            path="/dashboard/socials"
+            path="social"
             element={
               <Suspense fallback={<Loader />}>
-                <DashboardSocials />
-              </Suspense>
-            }
-          />
-          <Route
-            path="/dashboard/socials/new"
-            element={
-              <Suspense fallback={<Loader />}>
-                <DashboardSocialSave />
-              </Suspense>
-            }
-          />
-          <Route
-            path="/dashboard/socials/edit/:id"
-            element={
-              <Suspense fallback={<Loader />}>
-                <DashboardSocialSave />
+                <DashboardSocial />
               </Suspense>
             }
           />
         </Route>
       </Route>
-      */}
+
+      {/* RUTA 404 */}
+      <Route
+        path="*"
+        element={
+          <div className="min-h-screen flex items-center justify-center bg-black text-white font-mono">
+            <div className="text-center">
+              <h1 className="text-4xl font-bold text-cyan-500 mb-2">404</h1>
+              <p>Página no encontrada</p>
+            </div>
+          </div>
+        }
+      />
     </Routes>
   );
 };

@@ -1,74 +1,35 @@
-// src/modules/auth/RegisterPage.tsx
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "../../store/authStore";
-import type { RegisterFormValues } from "../../types/schemas/RegisterSchema";
 import { RegisterForm } from "./components/RegisterForm";
+import { GlassTiltCard } from "../../components/ui/GlassTiltCard";
+import { ParticlesBackground } from "../../components/shared/ParticlesBackground";
 
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { useThemeStore } from "../../store/themeStore";
-
-export default function RegisterPage() {
-  const navigate = useNavigate();
-
-  // Obtenemos la lógica de Zustand
-  const { register, isAuthenticated } = useAuthStore();
-
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  // Redirige si ya está logueado
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/dashboard", { replace: true });
-    }
-  }, [isAuthenticated, navigate]);
-
-  const handleRegisterSubmit = async (data: RegisterFormValues) => {
-    setIsLoading(true);
-    setError(null);
-
-    const { confirmPassword, ...apiData } = data;
-
-    try {
-      await register(apiData);
-
-      toast.success("¡Cuenta creada! Bienvenido.");
-      navigate("/dashboard", { replace: true });
-    } catch (err: any) {
-      const errorMessage =
-        err.response?.data?.message ||
-        (err.message.includes("Network Error")
-          ? "No se pudo conectar al servidor."
-          : null) ||
-        "Ocurrió un error inesperado.";
-
-      setError(errorMessage);
-      toast.error(errorMessage);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
+export const RegisterPage = () => {
   return (
-    <div className="w-full flex items-center justify-center p-4 md:p-12 min-h-[calc(100vh-148px)]">
-      <ToastContainer
-        position="bottom-right"
-        autoClose={3000}
-        theme={useThemeStore.getState().theme}
-        newestOnTop
-        closeOnClick
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
+    <div className="relative min-h-screen w-full flex items-center justify-center p-4 overflow-hidden bg-black">
+      <div className="absolute inset-0 z-0">
+        <ParticlesBackground />
+      </div>
 
-      <RegisterForm
-        onSubmit={handleRegisterSubmit}
-        isLoading={isLoading}
-        error={error}
-      />
+      <div className="relative z-10 w-full max-w-md mt-16">
+        <GlassTiltCard className="p-8 border-white/10 bg-black/40 backdrop-blur-xl">
+          {/* CABECERA (Solo Texto) */}
+          <div className="flex flex-col items-center text-center mb-6">
+            <h1 className="text-3xl font-bold text-white tracking-tight font-maven">
+              Únete al Hub
+            </h1>
+            <p className="text-gray-400 mt-1 text-sm">
+              Crea tu portafolio profesional en minutos.
+            </p>
+          </div>
+
+          <RegisterForm />
+        </GlassTiltCard>
+
+        <p className="text-center text-[10px] text-gray-600 mt-6 uppercase tracking-widest">
+          Join the Revolution • Studios TKOH
+        </p>
+      </div>
     </div>
   );
-}
+};
+
+export default RegisterPage;

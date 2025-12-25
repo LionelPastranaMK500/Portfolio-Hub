@@ -1,8 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { useThemeStore } from "../../store/themeStore";
 import { useAuthStore } from "../../store/authStore";
-import { motion, AnimatePresence } from "framer-motion"; // Importamos AnimatePresence
-
+import { motion, AnimatePresence } from "framer-motion";
 import { Sun, Moon, LayoutGrid, LogIn, Code2, UserPlus } from "lucide-react";
 
 export function Header() {
@@ -11,12 +10,10 @@ export function Header() {
   const location = useLocation();
 
   const renderAuthButton = () => {
-    // ... (El código de los botones se mantiene igual que la versión Platinum) ...
-    // Para no repetir todo el bloque, solo pongo la lógica de renderAuthButton resumida aquí
-    // COPIA TU LÓGICA DE BOTONES PLATINUM AQUÍ SI LA TIENES, O ÚSALOS DIRECTO
+    // CASO 1: USUARIO AUTENTICADO -> MI PANEL
     if (isAuthenticated) {
       return (
-        <Link to="/dashboard/profile">
+        <Link to="/dashboard">
           <motion.div
             whileHover={{
               scale: 1.05,
@@ -25,6 +22,7 @@ export function Header() {
             whileTap={{ scale: 0.95 }}
             className="group flex items-center gap-2 px-5 py-2 rounded-full font-medium text-sm text-gray-200 border border-white/10 bg-white/5 backdrop-blur-md shadow-[0_0_10px_rgba(0,0,0,0.5)] transition-all hover:border-white/40 hover:shadow-[0_0_15px_rgba(255,255,255,0.15)]"
           >
+            {/* El icono inicia gris (text-gray-400) y pasa a blanco al hover */}
             <LayoutGrid
               size={18}
               className="text-gray-400 group-hover:text-white transition-colors duration-300"
@@ -37,6 +35,7 @@ export function Header() {
       );
     }
 
+    // CASO 2: ESTOY EN LOGIN -> CREAR CUENTA
     if (location.pathname === "/login") {
       return (
         <Link to="/register">
@@ -55,6 +54,7 @@ export function Header() {
       );
     }
 
+    // CASO 3: DEFAULT (VISITANTE) -> ACCEDER
     return (
       <Link to="/login">
         <motion.div
@@ -76,9 +76,10 @@ export function Header() {
       transition={{ duration: 0.8, ease: "circOut" }}
       className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-6 py-4 border-b border-white/5 backdrop-blur-md bg-white/[0.02]"
     >
+      {/* Ruido de fondo */}
       <div className="absolute inset-0 opacity-[0.05] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] pointer-events-none mix-blend-overlay" />
 
-      {/* Logo */}
+      {/* --- LOGO --- */}
       <Link to="/" className="relative z-10 flex items-center gap-3 group">
         <div className="p-2 rounded-xl bg-white/5 border border-white/10 group-hover:border-white/40 group-hover:bg-white/10 transition-all duration-500 shadow-[0_0_15px_rgba(0,0,0,0.5)] group-hover:shadow-[0_0_20px_rgba(255,255,255,0.15)]">
           <Code2 className="h-6 w-6 text-gray-300 group-hover:text-white transition-colors duration-300" />
@@ -93,15 +94,14 @@ export function Header() {
         </div>
       </Link>
 
-      {/* Acciones */}
+      {/* --- ACCIONES --- */}
       <nav className="relative z-10 flex items-center gap-4">
-        {/* --- TOGGLE THEME ANIMADO --- */}
+        {/* Toggle Theme */}
         <button
           onClick={toggleTheme}
           className="relative p-2.5 rounded-full bg-transparent hover:bg-white/10 border border-transparent hover:border-white/20 text-gray-400 hover:text-white transition-colors duration-300 overflow-hidden"
           aria-label="Alternar tema"
         >
-          {/* Usamos AnimatePresence para animar la salida y entrada */}
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={theme}

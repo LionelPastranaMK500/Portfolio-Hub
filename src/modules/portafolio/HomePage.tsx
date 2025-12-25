@@ -1,134 +1,90 @@
-// src/pages/public/HomePage.tsx
-import { Link } from "react-router-dom";
-import { usePublicPortfolios } from "../../services/publicPortfolio.service";
-import type { PortfolioPublicDto } from "../../types/portfolio";
-import { FaSpinner, FaExclamationTriangle, FaUser } from "react-icons/fa";
-import Tilt from "react-parallax-tilt";
-import { SEO } from "../../components/shared/SEO";
+import { motion } from "framer-motion";
+import { Search, WifiOff } from "lucide-react";
+import { PortfolioCard } from "./components/PortfolioCard";
+import { Loader } from "../../components/shared/Loader";
+import { usePublicPortfolios } from "../../hooks/usePublicPortfolio";
+import type { PortfolioPublicDto } from "../../types/models/publicapi";
 
-/**
- * Componente Tarjeta para mostrar un resumen del portafolio.
- * Reutiliza los estilos de 'backdrop-blur' del resto de la app.
- */
-function PortfolioCard({ portfolio }: { portfolio: PortfolioPublicDto }) {
-  return (
-    <Tilt
-      tiltMaxAngleX={5}
-      tiltMaxAngleY={5}
-      glareEnable={true}
-      glareMaxOpacity={0.05}
-      glareBorderRadius="1rem"
-    >
-      <Link
-        // Esta es la ruta pública que definimos en la API
-        to={`/portfolios/${portfolio.slug}`}
-        className="block p-6 rounded-2xl bg-white/10 border border-gray-700/50 backdrop-blur-lg shadow-xl
-                   transition-all duration-300 ease-in-out
-                   hover:scale-105 hover:border-cyan-400/50 hover:shadow-cyan-500/10"
-      >
-        {/* --- Avatar --- */}
-        <div
-          className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden 
-                     bg-gray-700/50 border-2 border-cyan-400 
-                     flex items-center justify-center shadow-inner"
-        >
-          {portfolio.avatarUrl ? (
-            <img
-              src={portfolio.avatarUrl}
-              alt={portfolio.fullName}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            // Icono placeholder si no hay avatar
-            <FaUser className="w-12 h-12 text-gray-400" />
-          )}
-        </div>
+export const HomePage = () => {
+  const { data: portfolios, isLoading, isError } = usePublicPortfolios();
 
-        {/* --- Información --- */}
-        <div className="text-center">
-          <h3 className="text-xl font-bold font-maven text-white truncate">
-            {portfolio.fullName}
-          </h3>
-          <p className="text-sm text-gray-300 font-maven h-10 line-clamp-2">
-            {portfolio.headline}
-          </p>
-        </div>
-      </Link>
-    </Tilt>
-  );
-}
-
-/**
- * Página Principal (Landing Page)
- * Muestra el grid de portafolios públicos.
- */
-export default function HomePage() {
-  // 1. Llama al hook de React Query para obtener los datos
-  const { data: portfolios, isLoading, isError, error } = usePublicPortfolios();
-
-  // 2. Estado de Carga
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-96">
-        <FaSpinner className="h-12 w-12 text-cyan-300 animate-spin" />
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader />
       </div>
     );
   }
 
-  // 3. Estado de Error
   if (isError) {
     return (
-      <div className="flex justify-center items-center h-96">
-        <div
-          className="flex flex-col items-center justify-center 
-                       text-red-300 bg-red-500/20 
-                       max-w-lg mx-auto p-6 rounded-lg border border-red-400"
-        >
-          <FaExclamationTriangle className="h-12 w-12 mb-4" />
-          <h2 className="text-xl font-bold mb-2">
-            Error al cargar portafolios
-          </h2>
-          <p className="text-center">
-            {(error as Error)?.message || "Ocurrió un error inesperado."}
-          </p>
-        </div>
+      <div className="min-h-screen flex flex-col items-center justify-center text-white gap-4">
+        <WifiOff size={48} className="text-red-500" />
+        <h2 className="text-2xl font-bold font-maven">Error de conexión</h2>
+        <p className="text-gray-400">
+          No pudimos cargar el talento. Verifica tu conexión.
+        </p>
       </div>
     );
   }
 
-  // 4. Estado Exitoso (Success)
   return (
-    <>
-      <SEO
-        title="Inicio"
-        description="Explora los mejores portafolios de desarrolladores en Portfolio Hub."
-      />
-      <section className="container mx-auto max-w-7xl px-4 py-12 md:py-20">
-        {/* --- Título de la Sección --- */}
-        <h1
-          className="text-4xl md:text-5xl font-bold text-center mb-4 font-maven text-white"
-          style={{ textShadow: "0 2px 10px rgba(0,0,0,0.3)" }}
-        >
-          Explora los Portafolios
-        </h1>
-        <p className="text-xl text-center text-cyan-200 mb-16 font-maven">
-          Descubre el talento y los proyectos de nuestra comunidad.
+    <div className="relative min-h-screen w-full px-6 py-20 md:px-12 md:py-24">
+      {/* Header Sección */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mb-16 max-w-2xl"
+      >
+        <h2 className="text-4xl md:text-6xl font-bold text-white mb-4 tracking-tighter font-maven">
+          Talento <span className="text-gray-500">Curado</span>
+        </h2>
+        <p className="text-gray-400 text-lg">
+          Explora los perfiles destacados de Studios TKOH!
         </p>
 
-        {/* --- Grid de Portafolios --- */}
-        {portfolios && portfolios.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            {portfolios.map((portfolio) => (
-              <PortfolioCard key={portfolio.slug} portfolio={portfolio} />
-            ))}
+        {/* Buscador Visual */}
+        <div className="mt-8 relative max-w-md group">
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <Search className="h-5 w-5 text-gray-500 group-focus-within:text-cyan-400 transition-colors" />
           </div>
+          <input
+            type="text"
+            placeholder="Buscar por nombre o rol..."
+            className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-cyan-500/50 focus:bg-black/50 transition-all font-maven"
+          />
+        </div>
+      </motion.div>
+
+      {/* GRID CONECTADO AL DTO */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 pb-20">
+        {portfolios && portfolios.length > 0 ? (
+          portfolios.map((profile: PortfolioPublicDto, index: number) => (
+            <motion.div
+              key={profile.slug}
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+            >
+              <PortfolioCard
+                name={profile.fullName}
+                role={profile.headline}
+                image={profile.avatarUrl}
+                slug={profile.slug}
+                isCollaborator={profile.isTkohCollaborator}
+              />
+            </motion.div>
+          ))
         ) : (
-          // Mensaje si la API no devuelve portafolios
-          <p className="text-center text-gray-300 text-lg">
-            Aún no hay portafolios públicos disponibles. ¡Vuelve pronto!
-          </p>
+          <div className="col-span-2 flex flex-col items-center justify-center py-20 border border-dashed border-white/10 rounded-3xl bg-white/5">
+            <p className="text-gray-400 text-xl font-maven">
+              Aún no hay perfiles públicos visibles.
+            </p>
+          </div>
         )}
-      </section>
-    </>
+      </div>
+    </div>
   );
-}
+};
+
+export default HomePage;

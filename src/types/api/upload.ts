@@ -1,4 +1,4 @@
-// src/types/upload.ts
+// src/types/api/upload.ts
 
 /**
  * ESPEJO DE: studios.tkoh.portfolio.dto.upload.UploadResponse

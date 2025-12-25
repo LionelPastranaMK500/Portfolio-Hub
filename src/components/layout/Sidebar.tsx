@@ -1,85 +1,141 @@
-// src/components/layout/Sidebar.tsx
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore";
-
-// --- NUEVOS ICONOS DE REACT-ICONS ---
+import { useThemeStore } from "../../store/themeStore";
+import { cn } from "../../utils/cn";
+import { motion, AnimatePresence } from "framer-motion";
 import {
-  FaUser,
-  FaSuitcase,
-  FaGraduationCap,
-  FaLink,
-  FaAward,
-} from "react-icons/fa";
-import { HiDocumentText } from "react-icons/hi2";
-import { IoSparkles } from "react-icons/io5";
-import { FiLogOut } from "react-icons/fi";
-// ---
+  User,
+  Briefcase,
+  LayoutDashboard,
+  GraduationCap,
+  FolderOpen,
+  Sparkles,
+  Share2,
+  Award,
+  LogOut,
+  Sun,
+  Moon,
+} from "lucide-react";
+
+import { TkohLogo } from "../../modules/landing/components/TkohLogo";
 
 export function Sidebar() {
   const navigate = useNavigate();
   const logout = useAuthStore((state) => state.logout);
-
-  const navLinkClass = ({ isActive }: { isActive: boolean }) =>
-    `flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200
-     ${
-       isActive
-         ? "bg-white/20 text-cyan-300"
-         : "text-gray-300 hover:text-white hover:bg-white/10"
-     }`;
+  const { theme, toggleTheme } = useThemeStore();
 
   const handleLogout = () => {
     logout();
     navigate("/login", { replace: true });
   };
 
+  const getNavLinkClass = ({ isActive }: { isActive: boolean }) =>
+    cn(
+      "relative flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-300 group overflow-hidden",
+      isActive
+        ? "text-cyan-400 bg-cyan-950/30 border border-cyan-500/20 shadow-[0_0_15px_rgba(34,211,238,0.1)]"
+        : "text-gray-400 hover:text-white hover:bg-white/5 border border-transparent"
+    );
+
   return (
-    <aside className="sticky top-16 z-30 hidden h-[calc(100vh-64px)] w-full shrink-0 overflow-y-auto border-r border-white/10 bg-gray-900/10 backdrop-blur-md md:block">
-      <div className="h-full py-6 pl-8 pr-6 lg:py-8">
-        <nav className="flex flex-col gap-1 font-maven">
-          <span className="mb-2 text-xs font-semibold uppercase text-gray-400">
-            Editar Portafolio
-          </span>
+    <aside className="hidden md:flex flex-col w-72 h-screen shrink-0 border-r border-white/10 bg-black/40 backdrop-blur-xl fixed left-0 top-0 z-40">
+      {/* 1. BRANDING */}
+      <div className="p-6 border-b border-white/5 flex items-center gap-3">
+        <div className="scale-75 origin-left">
+          <TkohLogo />
+        </div>
+        <span className="font-maven font-bold text-gray-200 tracking-wide mt-1">
+          Studio
+        </span>
+      </div>
 
-          <NavLink to="/dashboard/profile" className={navLinkClass}>
-            <FaUser className="h-4 w-4" />
-            Mi Perfil
-          </NavLink>
-          <NavLink to="/dashboard/experience" className={navLinkClass}>
-            <FaSuitcase className="h-4 w-4" />
-            Experiencia
-          </NavLink>
-          <NavLink to="/dashboard/education" className={navLinkClass}>
-            <FaGraduationCap className="h-4 w-4" />
-            Educación
-          </NavLink>
-          <NavLink to="/dashboard/projects" className={navLinkClass}>
-            <HiDocumentText className="h-4 w-4" />
-            Proyectos
-          </NavLink>
-          <NavLink to="/dashboard/skills" className={navLinkClass}>
-            <IoSparkles className="h-4 w-4" />
-            Habilidades
-          </NavLink>
-          <NavLink to="/dashboard/socials" className={navLinkClass}>
-            <FaLink className="h-4 w-4" />
-            Redes Sociales
-          </NavLink>
-          <NavLink to="/dashboard/certificates" className={navLinkClass}>
-            <FaAward className="h-4 w-4" />
-            Certificados
+      {/* 2. NAVEGACIÓN */}
+      <div className="flex-1 overflow-y-auto py-6 px-4 space-y-1 custom-scrollbar">
+        <div className="px-2 mb-2 text-[10px] font-bold uppercase tracking-widest text-gray-600">
+          Tu Portafolio
+        </div>
+
+        <nav className="space-y-2">
+          {/* INICIO */}
+          <NavLink to="/dashboard" end className={getNavLinkClass}>
+            <LayoutDashboard size={18} /> Inicio
           </NavLink>
 
-          <span className="mt-4 mb-2 text-xs font-semibold uppercase text-gray-400">
-            Cuenta
-          </span>
-          <button
-            onClick={handleLogout}
-            className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-300 transition-all duration-200 hover:text-red-400 hover:bg-white/10"
-          >
-            <FiLogOut className="h-4 w-4" />
-            Cerrar Sesión
-          </button>
+          {/* PERFIL */}
+          <NavLink to="/dashboard/profile" className={getNavLinkClass}>
+            <User size={18} /> Editar Perfil
+          </NavLink>
+
+          {/* PROYECTOS */}
+          <NavLink to="/dashboard/projects" className={getNavLinkClass}>
+            <FolderOpen size={18} /> Proyectos
+          </NavLink>
+
+          {/* SKILLS */}
+          <NavLink to="/dashboard/skills" className={getNavLinkClass}>
+            <Sparkles size={18} /> Habilidades
+          </NavLink>
+
+          {/* EXPERIENCIA */}
+          <NavLink to="/dashboard/experience" className={getNavLinkClass}>
+            <Briefcase size={18} /> Experiencia
+          </NavLink>
+
+          {/* EDUCACIÓN */}
+          <NavLink to="/dashboard/education" className={getNavLinkClass}>
+            <GraduationCap size={18} /> Educación
+          </NavLink>
+
+          {/* CERTIFICADOS */}
+          <NavLink to="/dashboard/certificates" className={getNavLinkClass}>
+            <Award size={18} /> Certificados
+          </NavLink>
+
+          {/* SOCIAL (Corregido: '/social' en singular) */}
+          <NavLink to="/dashboard/social" className={getNavLinkClass}>
+            <Share2 size={18} /> Redes Sociales
+          </NavLink>
         </nav>
+      </div>
+
+      {/* 3. FOOTER (TEMA + LOGOUT) */}
+      <div className="p-4 border-t border-white/5 bg-black/20 space-y-2">
+        <div className="px-2 mb-2 text-[10px] font-bold uppercase tracking-widest text-gray-600">
+          Configuración
+        </div>
+
+        {/* BOTÓN CAMBIO DE TEMA */}
+        <button
+          onClick={toggleTheme}
+          className="flex w-full items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-gray-400 hover:text-white hover:bg-white/5 border border-transparent transition-all duration-300"
+        >
+          <div className="relative w-5 h-5 flex items-center justify-center">
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={theme}
+                initial={{ y: -10, opacity: 0, rotate: -90 }}
+                animate={{ y: 0, opacity: 1, rotate: 0 }}
+                exit={{ y: 10, opacity: 0, rotate: 90 }}
+                transition={{ duration: 0.2 }}
+              >
+                {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+          <span>{theme === "light" ? "Modo Oscuro" : "Modo Claro"}</span>
+        </button>
+
+        {/* BOTÓN LOGOUT */}
+        <button
+          onClick={handleLogout}
+          className="flex w-full items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-gray-400 hover:text-red-400 hover:bg-red-500/10 hover:border-red-500/20 border border-transparent transition-all duration-300 group"
+        >
+          <LogOut
+            size={18}
+            className="group-hover:-translate-x-1 transition-transform"
+          />
+          Cerrar Sesión
+        </button>
       </div>
     </aside>
   );

@@ -18,6 +18,6 @@ export const Loader = () => {
         <span className="loader-letter letter10">.</span>
       </div>
     </div>,
-    document.body // Destino del portal
+    document.body
   );
 };

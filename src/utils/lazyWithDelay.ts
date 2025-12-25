@@ -8,7 +8,7 @@ import { lazy } from "react";
  */
 export function lazyWithDelay(
   importFunc: () => Promise<any>,
-  delay: number = 1500
+  delay: number = 1000
 ) {
   return lazy(() =>
     Promise.all([

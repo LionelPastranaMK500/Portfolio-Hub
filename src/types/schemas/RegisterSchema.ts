@@ -1,3 +1,4 @@
+// src/types/schemas/RegisterSchema.ts
 import { z } from "zod";
 
 export const registerSchema = z
