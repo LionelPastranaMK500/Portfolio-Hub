@@ -26,8 +26,14 @@ export const RegisterForm = () => {
   });
 
   const onSubmit = async (data: RegisterFormValues) => {
+    // 1. LIMPIEZA DE DATOS: Quitamos confirmPassword antes de enviar al backend
+    // Java espera: { fullName, email, password }
+    const { confirmPassword, ...requestData } = data;
+
     setServerError(null);
-    registerUser(data, {
+
+    // Enviamos solo requestData (sin la confirmación)
+    registerUser(requestData, {
       onSuccess: () => {
         // Al registrarse exitosamente, el hook useAuth ya guarda el token
         // Redirigimos al onboarding o al perfil
@@ -41,9 +47,15 @@ export const RegisterForm = () => {
     });
   };
 
+  // Función para ver errores de validación en consola si el botón "no hace nada"
+  const onErrorValidation = (errors: any) => {
+    console.log("Errores de validación Zod:", errors);
+  };
+
   return (
     <form
-      onSubmit={handleSubmit(onSubmit)}
+      // Pasamos onErrorValidation como segundo argumento para depurar
+      onSubmit={handleSubmit(onSubmit, onErrorValidation)}
       className="space-y-5 w-full max-w-sm mx-auto"
     >
       {/* ERROR FEEDBACK */}
@@ -150,6 +162,38 @@ export const RegisterForm = () => {
           </span>
         )}
       </div>
+
+      {/* --- CONFIRMAR PASSWORD (NUEVO CAMPO AGREGADO) --- */}
+      <div className="space-y-2">
+        <label className="text-sm font-medium text-gray-300 ml-1">
+          Confirmar Contraseña
+        </label>
+        <div className="relative group">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <Lock
+              size={18}
+              className="text-gray-500 group-focus-within:text-cyan-400 transition-colors"
+            />
+          </div>
+          <input
+            {...register("confirmPassword")}
+            type="password"
+            placeholder="Repite tu contraseña"
+            className={cn(
+              "w-full pl-10 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 transition-all outline-none",
+              "focus:border-cyan-500/50 focus:bg-black/40 focus:ring-1 focus:ring-cyan-500/20",
+              errors.confirmPassword &&
+                "border-red-500/50 focus:border-red-500 focus:ring-red-500/20"
+            )}
+          />
+        </div>
+        {errors.confirmPassword && (
+          <span className="text-xs text-red-400 ml-1">
+            {errors.confirmPassword.message}
+          </span>
+        )}
+      </div>
+      {/* ------------------------------------------------ */}
 
       {/* BUTTON */}
       <motion.button
