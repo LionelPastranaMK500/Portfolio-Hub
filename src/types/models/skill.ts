@@ -1,14 +1,25 @@
-// src/types/skill.ts
+// src/types/models/skill.ts
+
+/**
+ * ESPEJO DE: studios.tkoh.portfolio.dto.skill.GlobalSkillDto
+ * Backend: src/main/java/studios/tkoh/portfolio/dto/skill/GlobalSkillDto.java
+ */
+export interface GlobalSkillDto {
+  id: number;
+  name: string;
+  iconUrl: string | null;
+}
 
 /**
  * ESPEJO DE: studios.tkoh.portfolio.dto.skill.SkillDto
  * Backend: src/main/java/studios/tkoh/portfolio/dto/skill/SkillDto.java
- * Nota: El DTO de lectura no expone 'sortOrder' en el record Java proporcionado.
+ * Nota: El DTO de lectura NO expone 'sortOrder', pero sí 'globalSkillId'.
  */
 export interface SkillDto {
   id: number;
   name: string;
-  level: number; // Java short -> TS number
+  globalSkillId: number | null; // Nuevo campo reflejado del Java Record
+  level: number;
   icon: string | null;
 }
 
@@ -20,7 +31,7 @@ export interface SkillCreateRequest {
   name: string; // @NotBlank
   level: number; // @Min(0) @Max(100)
   icon: string | null;
-  sortOrder: number; // @NotNull - Este campo existe aquí pero no en SkillDto (Java)
+  sortOrder: number; // @NotNull
 }
 
 /**
@@ -38,8 +49,7 @@ export interface SkillUpdateRequest {
 /**
  * ESPEJO DE: studios.tkoh.portfolio.dto.skill.BatchDeleteRequest
  * Backend: src/main/java/studios/tkoh/portfolio/dto/skill/BatchDeleteRequest.java
- * Usado para borrar múltiples skills a la vez.
  */
 export interface BatchDeleteRequest {
-  ids: number[]; // List<Long>
+  ids: number[]; // List<Long> @NotEmpty
 }

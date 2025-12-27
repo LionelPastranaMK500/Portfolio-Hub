@@ -10,6 +10,7 @@ import type {
   SkillCreateRequest,
   SkillUpdateRequest,
   BatchDeleteRequest,
+  GlobalSkillDto,
 } from "../types/models/skill";
 
 /**
@@ -19,6 +20,24 @@ import type {
 const BASE_URL = "/me/skill-categories";
 
 export const skillService = {
+  // --- Global Skill Search (NUEVO) ---
+
+  /**
+   * @GetMapping("/search")
+   * Busca habilidades globales por nombre (autocompletado)
+   */
+  searchGlobalSkills: async (query: string): Promise<GlobalSkillDto[]> => {
+    if (!query || query.trim() === "") return [];
+
+    const response = await apiClient.get<ApiResponse<GlobalSkillDto[]>>(
+      `${BASE_URL}/search`,
+      {
+        params: { query },
+      }
+    );
+    return response.data.data;
+  },
+
   // --- SkillCategory Endpoints ---
 
   /**
