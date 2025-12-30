@@ -1,8 +1,10 @@
 import { useForm } from "react-hook-form";
-import { useSendContactMessage } from "../../../services/publicPortfolio.service";
-import { toast } from "react-toastify";
+// Importamos el hook correcto desde la carpeta de hooks
+import { useContactForm } from "../../../hooks/usePublicPortfolio";
+import { toast } from "sonner";
 import { FaPaperPlane, FaSpinner } from "react-icons/fa";
-import type { ContactRequest } from "../../../types/Contact";
+// Ruta corregida según tu comentario
+import type { ContactRequest } from "../../../types/models/publicapi";
 
 interface ContactFormProps {
   portfolioSlug: string;
@@ -15,7 +17,9 @@ export function ContactForm({ portfolioSlug }: ContactFormProps) {
     reset,
     formState: { errors },
   } = useForm<ContactRequest>();
-  const { mutateAsync: sendMessage, isPending } = useSendContactMessage();
+
+  // Cambiamos useSendContactMessage por useContactForm
+  const { mutateAsync: sendMessage, isPending } = useContactForm();
 
   const onSubmit = async (data: ContactRequest) => {
     try {
