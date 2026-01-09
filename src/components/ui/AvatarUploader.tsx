@@ -1,6 +1,8 @@
 import { useRef } from "react";
 import { Camera, Loader2, UploadCloud } from "lucide-react";
 import { motion } from "framer-motion";
+// 1. IMPORTAR LA UTILIDAD
+import { getDriveDirectLink } from "../../utils/driveHelper";
 
 interface AvatarUploaderProps {
   currentUrl: string | null | undefined;
@@ -16,6 +18,9 @@ export const AvatarUploader = ({
   size = "lg",
 }: AvatarUploaderProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // 2. PROCESAR LA URL AQUÍ
+  const directUrl = getDriveDirectLink(currentUrl);
 
   const handleClick = () => {
     if (!isLoading) fileInputRef.current?.click();
@@ -34,7 +39,6 @@ export const AvatarUploader = ({
 
   return (
     <div className="relative group cursor-pointer" onClick={handleClick}>
-      {/* AQUÍ ESTABA EL ERROR: Faltaba el onChange */}
       <input
         type="file"
         ref={fileInputRef}
@@ -43,7 +47,6 @@ export const AvatarUploader = ({
         accept="image/png, image/jpeg, image/jpg, image/webp"
       />
 
-      {/* Contenedor de la Imagen */}
       <motion.div
         whileHover={{ scale: 1.05 }}
         className={`${dims} rounded-full border-4 border-white/10 bg-gray-800 flex items-center justify-center overflow-hidden shadow-2xl relative`}
@@ -54,13 +57,20 @@ export const AvatarUploader = ({
           </div>
         ) : null}
 
-        {currentUrl ? (
+        {/* 3. USAR directUrl EN LUGAR DE currentUrl */}
+        {directUrl ? (
           <img
-            src={currentUrl}
+            src={directUrl}
             alt="Avatar"
+            referrerPolicy="no-referrer"
             className={`w-full h-full object-cover transition-opacity duration-300 ${
               isLoading ? "opacity-50" : "opacity-100 group-hover:opacity-70"
             }`}
+            onError={(e) => {
+              console.error("Error cargando avatar:", directUrl);
+              // Solo ocultamos si falla, para ver el icono de subida por detrás
+              e.currentTarget.style.display = "none";
+            }}
           />
         ) : (
           <div className="flex flex-col items-center text-gray-500 group-hover:text-cyan-400 transition-colors">
@@ -68,7 +78,6 @@ export const AvatarUploader = ({
           </div>
         )}
 
-        {/* Overlay "Cambiar" al hacer Hover */}
         {!isLoading && (
           <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10">
             <Camera className="text-white mb-1" size={20} />

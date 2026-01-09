@@ -15,6 +15,7 @@ import { ProfileTimeline } from "./components/ProfileTimeline";
 
 export const PortfolioDetailPage = () => {
   const { slug } = useParams<{ slug: string }>();
+  // Usamos tu hook original que sí devuelve el objeto 'profile' correcto
   const { data: profile, isLoading, isError } = usePublicPortfolioBySlug(slug);
 
   if (isLoading) {
@@ -55,7 +56,7 @@ export const PortfolioDetailPage = () => {
       </Link>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* IDENTIDAD (Izquierda Sticky) */}
+        {/* IDENTIDAD (Izquierda Sticky) - Aquí se renderiza el ProfileHeader modificado */}
         <div className="lg:col-span-4 xl:col-span-3 space-y-6">
           <ProfileHeader profile={profile} />
         </div>
@@ -64,14 +65,17 @@ export const PortfolioDetailPage = () => {
         <div className="lg:col-span-8 xl:col-span-9 space-y-6">
           <ProfileBio bio={profile.bio} />
 
-          {/* ARSENAL TECNOLÓGICO (Ahora sí conectado) */}
+          {/* ARSENAL TECNOLÓGICO */}
+          {/* Mantenemos tus props originales: categories */}
           <ProfileSkills categories={profile.skillCategories} />
 
+          {/* Mantenemos tus props originales: projects + profileSlug */}
           <ProfileProjects
             projects={profile.projects}
             profileSlug={profile.slug}
           />
 
+          {/* Mantenemos tus props originales: experiences, education, certificates */}
           <ProfileTimeline
             experiences={profile.experiences}
             education={profile.education}

@@ -16,7 +16,7 @@ export const TkohLogo = () => {
         No necesitas importar nada.
       */}
       <img
-        src="../../../../public/Logo_STKH.svg"
+        src="../../../../public/Logo_STKH.png"
         alt="Studios TKOH Logo"
         className="w-32 h-32 md:w-48 md:h-48 object-contain drop-shadow-[0_0_25px_rgba(255,255,255,0.2)]"
       />

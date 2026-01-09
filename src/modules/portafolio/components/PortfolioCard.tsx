@@ -1,8 +1,11 @@
-import { ArrowUpRight, Code2, BadgeCheck, User } from "lucide-react"; // Importamos 'User' para el icono de persona
+import { useState } from "react";
+import { ArrowUpRight, Code2, BadgeCheck, User } from "lucide-react";
 import { GlassTiltCard } from "../../../components/ui/GlassTiltCard";
 import { Link } from "react-router-dom";
 import { cn } from "../../../utils/cn";
 import type { PortfolioCardProps } from "../../../types/ui/PortfolioCardProps";
+// 1. IMPORTAR LA UTILIDAD
+import { getDriveDirectLink } from "../../../utils/driveHelper";
 
 export const PortfolioCard = ({
   name,
@@ -11,6 +14,11 @@ export const PortfolioCard = ({
   slug,
   isCollaborator,
 }: PortfolioCardProps) => {
+  const [imgError, setImgError] = useState(false);
+
+  // 2. PROCESAR LA URL
+  const directUrl = getDriveDirectLink(image || undefined);
+
   return (
     <Link to={`/portfolios/${slug}`} className="block h-full">
       <GlassTiltCard
@@ -21,27 +29,26 @@ export const PortfolioCard = ({
             : "border-white/10 bg-black/20 hover:border-white/30 hover:bg-black/40"
         )}
       >
-        {/* HEADER */}
         <div className="flex justify-between items-start">
           <div className="relative">
-            {/* Contenedor del Avatar */}
             <div
               className={cn(
-                "w-20 h-20 rounded-full p-[2px] overflow-hidden flex items-center justify-center", // Flex para centrar el icono si no hay imagen
+                "w-20 h-20 rounded-full p-[2px] overflow-hidden flex items-center justify-center",
                 isCollaborator
                   ? "bg-gradient-to-br from-cyan-400 to-transparent shadow-[0_0_15px_rgba(34,211,238,0.3)]"
                   : "bg-gradient-to-br from-white/50 to-transparent"
               )}
             >
-              {/* LÓGICA ESTRICTA: ¿Hay imagen en el DTO? */}
-              {image ? (
+              {/* 3. USAR directUrl */}
+              {directUrl && !imgError ? (
                 <img
-                  src={image}
+                  src={directUrl}
                   alt={name}
+                  referrerPolicy="no-referrer"
+                  onError={() => setImgError(true)}
                   className="w-full h-full rounded-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
                 />
               ) : (
-                // SI NO HAY IMAGEN -> ICONO LOCAL "PERSONITA"
                 <div className="w-full h-full rounded-full bg-white/5 flex items-center justify-center">
                   <User
                     className={cn(
@@ -54,7 +61,6 @@ export const PortfolioCard = ({
                 </div>
               )}
             </div>
-            {/* Indicador visual (Decorativo) */}
             <div className="absolute bottom-1 right-1 w-4 h-4 bg-green-500 border-2 border-black rounded-full animate-pulse" />
           </div>
 
@@ -70,7 +76,6 @@ export const PortfolioCard = ({
           </div>
         </div>
 
-        {/* DATA REAL */}
         <div className="mt-8 space-y-3">
           <h3 className="text-3xl font-bold text-white tracking-tight group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-gray-400 transition-all truncate">
             {name}
@@ -95,7 +100,6 @@ export const PortfolioCard = ({
           </div>
         </div>
 
-        {/* FOOTER */}
         <div className="mt-8 pt-6 border-t border-white/10 flex justify-between items-center opacity-60 group-hover:opacity-100 transition-opacity">
           <span className="text-xs text-gray-400">Ver perfil completo</span>
           <div className="h-[1px] flex-grow bg-gradient-to-r from-transparent via-white/20 to-transparent mx-4" />

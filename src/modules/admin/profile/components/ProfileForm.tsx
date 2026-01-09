@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -9,6 +9,8 @@ import {
   Loader2,
   Save,
   Globe,
+  Copy,
+  Check,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import {
@@ -18,14 +20,13 @@ import {
 import type { ProfileFormProps } from "../../../../types/ui/ProfileUI";
 import type { ProfileUpdateRequest } from "../../../../types/models/profile";
 import { AvatarUploader } from "../../../../components/ui/AvatarUploader";
-import { ResumeUploader } from "../../../../components/ui/ResumeUploader"; // <--- 1. IMPORTAR
+import { ResumeUploader } from "../../../../components/ui/ResumeUploader";
 
-// 2. EXTENDER PROPS (Avatar + Resume)
 interface ExtendedProfileFormProps extends ProfileFormProps {
   onUploadAvatar: (file: File) => void;
   isUploadingAvatar: boolean;
-  onUploadResume: (file: File) => void; // Nuevo
-  isUploadingResume: boolean; // Nuevo
+  onUploadResume: (file: File) => void;
+  isUploadingResume: boolean;
 }
 
 export const ProfileForm = ({
@@ -34,9 +35,12 @@ export const ProfileForm = ({
   onSubmit,
   onUploadAvatar,
   isUploadingAvatar,
-  onUploadResume, // Destructuring
-  isUploadingResume, // Destructuring
+  onUploadResume,
+  isUploadingResume,
 }: ExtendedProfileFormProps) => {
+  // Estado para feedback visual del botón copiar
+  const [isCopied, setIsCopied] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -76,6 +80,19 @@ export const ProfileForm = ({
     onSubmit(payload);
   };
 
+  // Función para copiar la URL pública al portapapeles
+  const handleCopyLink = () => {
+    if (!initialData?.slug) return;
+
+    // Construye la URL completa dinámicamente usando el origen actual (localhost o dominio)
+    const fullUrl = `${window.location.origin}/portfolios/${initialData.slug}`;
+
+    navigator.clipboard.writeText(fullUrl).then(() => {
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000); // Resetear icono a los 2s
+    });
+  };
+
   const inputBaseClass =
     "w-full p-3 pl-10 rounded-xl bg-black/40 border text-white focus:ring-1 outline-none transition-all placeholder-gray-600";
   const errorInputClass =
@@ -108,12 +125,33 @@ export const ProfileForm = ({
             <h2 className="text-3xl font-bold text-white font-maven">
               {initialData?.fullName || "Tu Nombre"}
             </h2>
-            <div className="flex items-center justify-center md:justify-start gap-2 text-cyan-400 bg-cyan-950/30 px-3 py-1 rounded-full border border-cyan-500/20 w-fit mx-auto md:mx-0">
-              <Globe size={14} />
-              <span className="text-xs font-mono tracking-wide">
-                studiostkoh.com/portfolios/{initialData?.slug || "usuario"}
-              </span>
+
+            {/* LINK PÚBLICO CON BOTÓN DE COPIAR */}
+            <div className="flex items-center gap-0 mx-auto md:mx-0 w-fit group">
+              <div className="flex items-center gap-2 text-cyan-400 bg-cyan-950/30 px-3 py-1.5 rounded-l-full border border-cyan-500/20 border-r-0 h-8">
+                <Globe size={14} />
+                <span className="text-xs font-mono tracking-wide truncate max-w-[150px] md:max-w-[200px]">
+                  studiostkoh.com/portfolios/{initialData?.slug || "usuario"}
+                </span>
+              </div>
+
+              <button
+                onClick={handleCopyLink}
+                type="button"
+                className="flex items-center justify-center bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/20 border-l-0 rounded-r-full pl-2 pr-3 h-8 transition-colors cursor-pointer"
+                title="Copiar enlace público"
+              >
+                {isCopied ? (
+                  <Check size={14} className="text-green-400" />
+                ) : (
+                  <Copy
+                    size={14}
+                    className="text-cyan-400 group-hover:text-cyan-200"
+                  />
+                )}
+              </button>
             </div>
+
             <p className="text-gray-500 text-sm max-w-md">
               Esta es tu tarjeta de presentación.
             </p>
@@ -231,7 +269,7 @@ export const ProfileForm = ({
             </div>
           </div>
 
-          {/* 3. SECCIÓN CV (Integración del componente nuevo) */}
+          {/* SECCIÓN CV */}
           <div className="pt-2 border-t border-white/5">
             <ResumeUploader
               currentUrl={initialData?.resumeUrl}
