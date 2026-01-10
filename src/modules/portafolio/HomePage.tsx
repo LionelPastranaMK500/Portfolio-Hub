@@ -71,7 +71,7 @@ export const HomePage = () => {
                 role={profile.headline}
                 image={profile.avatarUrl}
                 slug={profile.slug}
-                isCollaborator={profile.isTkohCollaborator}
+                isCollaborator={profile.tkohCollab}
               />
             </motion.div>
           ))
