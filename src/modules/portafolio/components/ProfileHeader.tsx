@@ -24,7 +24,7 @@ const SocialIcon = ({ platform }: { platform: string }) => {
 };
 
 export const ProfileHeader = ({ profile }: ProfileHeaderProps) => {
-  const isCollab = profile.isTkohCollaborator;
+  const isCollab = profile.tkohCollab;
 
   // 3. Estado para fallback de error
   const [imgError, setImgError] = useState(false);

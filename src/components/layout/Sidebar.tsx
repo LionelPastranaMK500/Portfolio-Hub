@@ -39,18 +39,15 @@ export function Sidebar() {
 
   return (
     <aside className="hidden md:flex flex-col w-72 h-screen shrink-0 border-r border-white/10 bg-black/40 backdrop-blur-xl fixed left-0 top-0 z-40">
-      {/* 1. BRANDING */}
-      <div className="p-6 border-b border-white/5 flex items-center gap-3">
-        <div className="scale-75 origin-left">
+      {/* 1. BRANDING (Solo Logo Centrado) */}
+      <div className="p-6 border-b border-white/5 flex items-center justify-center">
+        <div className="scale-110 origin-center transition-transform hover:scale-125">
           <TkohLogo />
         </div>
-        <span className="font-maven font-bold text-gray-200 tracking-wide mt-1">
-          Studio
-        </span>
       </div>
 
-      {/* 2. NAVEGACIÓN */}
-      <div className="flex-1 overflow-y-auto py-6 px-4 space-y-1 custom-scrollbar">
+      {/* 2. NAVEGACIÓN (Con Scrollbar arreglado) */}
+      <div className="flex-1 overflow-y-auto py-6 px-4 space-y-1 sidebar-scrollbar">
         <div className="px-2 mb-2 text-[10px] font-bold uppercase tracking-widest text-gray-600">
           Tu Portafolio
         </div>
@@ -91,7 +88,7 @@ export function Sidebar() {
             <Award size={18} /> Certificados
           </NavLink>
 
-          {/* SOCIAL (Corregido: '/social' en singular) */}
+          {/* SOCIAL */}
           <NavLink to="/dashboard/social" className={getNavLinkClass}>
             <Share2 size={18} /> Redes Sociales
           </NavLink>

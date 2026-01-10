@@ -37,7 +37,7 @@ export interface PortfolioPublicDto {
   fullName: string;
   headline: string;
   avatarUrl: string | null;
-  isTkohCollaborator: boolean;
+  tkohCollab: boolean;
 }
 
 /**
@@ -54,7 +54,7 @@ export interface PortfolioDetailDto {
   location: string | null;
   avatarUrl: string | null;
   resumeUrl: string | null;
-  isTkohCollaborator: boolean;
+  tkohCollab: boolean;
 
   // Relaciones (Listas)
   socialLinks: SocialLinkDto[];
