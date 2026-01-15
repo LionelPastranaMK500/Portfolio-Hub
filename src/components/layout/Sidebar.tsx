@@ -20,6 +20,7 @@ import {
   ChevronRight,
   Menu,
   X,
+  Home, // Importamos Home para la función de salir al sitio público
 } from "lucide-react";
 
 import { TkohLogo } from "../../modules/landing/components/TkohLogo";
@@ -35,9 +36,15 @@ export function Sidebar() {
     navigate("/login", { replace: true });
   };
 
+  // Función para salir a la parte pública sin cerrar sesión
+  const handleExitToPublic = () => {
+    navigate("/");
+    if (window.innerWidth < 768) closeSidebar();
+  };
+
   return (
     <>
-      {/* BOTÓN BURBUJA FLOTANTE (Móvil - Posicionada Arriba) */}
+      {/* BOTÓN BURBUJA FLOTANTE (Móvil) */}
       <button
         onClick={toggleSidebar}
         className="md:hidden fixed top-4 left-4 z-[70] w-12 h-12 bg-cyan-500/20 backdrop-blur-lg text-cyan-400 rounded-full border border-cyan-500/30 shadow-[0_0_15px_rgba(34,211,238,0.2)] flex items-center justify-center active:scale-90 transition-transform"
@@ -173,8 +180,21 @@ export function Sidebar() {
           </nav>
         </div>
 
-        {/* 3. FOOTER */}
-        <div className="p-4 border-t border-white/5 bg-black/20 space-y-2">
+        {/* 3. FOOTER ACCIONES */}
+        <div className="p-4 border-t border-white/5 bg-black/20 space-y-1">
+          {/* BOTÓN: SALIR AL SITIO PÚBLICO */}
+          <button
+            onClick={handleExitToPublic}
+            className={cn(
+              "flex w-full items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/5 transition-all duration-300",
+              !isSidebarOpen && "justify-center px-0"
+            )}
+          >
+            <Home size={18} />
+            {isSidebarOpen && <span>Ver sitio público</span>}
+          </button>
+
+          {/* BOTÓN: TEMA */}
           <button
             onClick={toggleTheme}
             className={cn(
@@ -188,6 +208,7 @@ export function Sidebar() {
             )}
           </button>
 
+          {/* BOTÓN: CERRAR SESIÓN */}
           <button
             onClick={handleLogout}
             className={cn(
