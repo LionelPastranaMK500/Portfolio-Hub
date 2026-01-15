@@ -6,9 +6,8 @@ import {
   Save,
   X,
   FolderGit2,
-  Link as LinkIcon,
   Calendar,
-  Check,
+  Star,
   FileText,
   ArrowUpDown,
   AlertTriangle,
@@ -22,6 +21,7 @@ import type { ProjectFormProps } from "../../../../types/ui/ProjectUI";
 import type { ProjectCreateRequest } from "../../../../types/models/project";
 import { CoverUploader } from "../../../../components/ui/CoverUploader";
 import { getDriveDirectLink } from "../../../../utils/driveHelper";
+import { cn } from "../../../../utils/cn";
 
 interface ExtendedProjectFormProps extends ProjectFormProps {
   onUploadCover?: (file: File) => void;
@@ -48,6 +48,8 @@ export const ProjectForm = ({
     handleSubmit,
     reset,
     control,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(projectSchema),
@@ -64,6 +66,9 @@ export const ProjectForm = ({
       sortOrder: 0,
     },
   });
+
+  const startDate = watch("startDate");
+  const isFeatured = watch("featured");
 
   useEffect(() => {
     if (initialData) {
@@ -85,19 +90,6 @@ export const ProjectForm = ({
         endDate: end,
         featured: initialData.featured,
         sortOrder: initialData.sortOrder,
-      });
-    } else {
-      reset({
-        title: "",
-        summary: "",
-        description: "",
-        repoUrl: "",
-        liveUrl: "",
-        coverImage: "",
-        startDate: new Date(),
-        endDate: null,
-        featured: false,
-        sortOrder: 0,
       });
     }
   }, [initialData, reset]);
@@ -125,21 +117,20 @@ export const ProjectForm = ({
         : "border-white/10 focus:border-cyan-500/50 focus:ring-cyan-500/20"
     }`;
 
-  const labelClass = "block text-sm font-medium text-gray-400 mb-1 ml-1";
-
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       className="bg-gray-900 border border-white/10 rounded-2xl w-full max-w-3xl shadow-2xl relative flex flex-col max-h-[90vh]"
     >
-      {/* HEADER FIXED */}
+      {/* HEADER */}
       <div className="flex justify-between items-center px-6 py-4 border-b border-white/5 bg-gray-900 rounded-t-2xl z-20 shrink-0">
         <h3 className="text-xl font-bold text-white flex items-center gap-2">
           <FolderGit2 className="text-cyan-400" />
           {initialData ? "Editar Proyecto" : "Nuevo Proyecto"}
         </h3>
         <button
+          type="button"
           onClick={onCancel}
           className="text-gray-400 hover:text-white transition-colors p-1 hover:bg-white/10 rounded-lg"
         >
@@ -147,7 +138,6 @@ export const ProjectForm = ({
         </button>
       </div>
 
-      {/* CONTENIDO SCROLLABLE */}
       <div className="p-6 overflow-y-auto flex-1">
         <form
           id="project-form"
@@ -165,18 +155,16 @@ export const ProjectForm = ({
             ) : (
               <div className="p-4 rounded-xl bg-yellow-500/10 border border-yellow-500/20 flex items-center gap-3 text-yellow-200/80 text-sm">
                 <AlertTriangle size={18} />
-                <span>
-                  Guarda el proyecto primero para poder subir una imagen de
-                  portada.
-                </span>
+                <span>Guarda el proyecto primero para subir una portada.</span>
               </div>
             )}
           </div>
 
-          {/* DATOS PRINCIPALES */}
           <div className="space-y-4">
             <div>
-              <label className={labelClass}>Título</label>
+              <label className="block text-sm font-medium text-gray-400 mb-1 ml-1">
+                Título
+              </label>
               <input
                 {...register("title")}
                 className={inputClass(!!errors.title)}
@@ -188,9 +176,10 @@ export const ProjectForm = ({
                 </span>
               )}
             </div>
-
             <div>
-              <label className={labelClass}>Resumen Corto</label>
+              <label className="block text-sm font-medium text-gray-400 mb-1 ml-1">
+                Resumen Corto
+              </label>
               <textarea
                 {...register("summary")}
                 rows={2}
@@ -205,41 +194,11 @@ export const ProjectForm = ({
             </div>
           </div>
 
-          {/* LINKS */}
+          {/* FECHAS */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
-              <label className={labelClass}>
-                <span className="flex items-center gap-2">
-                  <FolderGit2 size={14} /> Repositorio
-                </span>
-              </label>
-              <input
-                {...register("repoUrl")}
-                className={inputClass(!!errors.repoUrl)}
-                placeholder="https://github.com/..."
-              />
-            </div>
-            <div>
-              <label className={labelClass}>
-                <span className="flex items-center gap-2">
-                  <LinkIcon size={14} /> Live URL
-                </span>
-              </label>
-              <input
-                {...register("liveUrl")}
-                className={inputClass(!!errors.liveUrl)}
-                placeholder="https://mi-app.com"
-              />
-            </div>
-          </div>
-
-          {/* FECHAS (Calendario con posicionamiento corregido) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div>
-              <label className={labelClass}>
-                <span className="flex items-center gap-2">
-                  <Calendar size={14} /> Inicio
-                </span>
+              <label className="text-sm font-medium text-gray-400 mb-1 ml-1 flex items-center gap-2">
+                <Calendar size={14} /> Inicio
               </label>
               <Controller
                 control={control}
@@ -254,21 +213,14 @@ export const ProjectForm = ({
                     showMonthDropdown
                     showYearDropdown
                     popperPlacement="bottom-start"
-                    popperClassName="z-[9999]"
-                    popperModifiers={[
-                      {
-                        name: "offset",
-                        options: {
-                          offset: [0, 8],
-                        },
-                      },
-                    ]}
                   />
                 )}
               />
             </div>
             <div>
-              <label className={labelClass}>Fin</label>
+              <label className="text-sm font-medium text-gray-400 mb-1 ml-1 flex items-center gap-2">
+                <Calendar size={14} /> Fin (Opcional)
+              </label>
               <Controller
                 control={control}
                 name="endDate"
@@ -279,78 +231,87 @@ export const ProjectForm = ({
                     dateFormat="dd/MM/yyyy"
                     className={inputClass(!!errors.endDate)}
                     placeholderText="En desarrollo..."
+                    minDate={startDate || undefined}
+                    isClearable
                     showMonthDropdown
                     showYearDropdown
-                    isClearable
                     popperPlacement="bottom-start"
-                    popperClassName="z-[9999]"
-                    popperModifiers={[
-                      {
-                        name: "offset",
-                        options: {
-                          offset: [0, 8],
-                        },
-                      },
-                    ]}
                   />
                 )}
               />
             </div>
           </div>
 
-          {/* CONFIG (Destacado y Orden) */}
-          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 p-4 rounded-xl bg-white/5 border border-white/10">
-            <label className="flex items-center gap-3 cursor-pointer group select-none">
-              <div className="relative">
-                <input
-                  type="checkbox"
-                  {...register("featured")}
-                  className="peer sr-only"
+          {/* DESTACAR PROYECTO */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-white/5 border border-white/10">
+            <div className="flex items-center gap-4">
+              <button
+                type="button"
+                onClick={() => setValue("featured", !isFeatured)}
+                className={cn(
+                  "w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 shadow-lg",
+                  isFeatured
+                    ? "bg-yellow-500 text-black shadow-yellow-500/20 scale-110"
+                    : "bg-white/5 text-gray-500 hover:text-gray-300 border border-white/10"
+                )}
+              >
+                <Star
+                  size={24}
+                  fill={isFeatured ? "currentColor" : "none"}
+                  strokeWidth={2.5}
                 />
-                <div className="w-6 h-6 rounded-md border-2 border-gray-500 bg-transparent peer-checked:bg-cyan-500 peer-checked:border-cyan-500 transition-all flex items-center justify-center">
-                  <Check
-                    size={16}
-                    className="text-black opacity-0 peer-checked:opacity-100 transition-opacity"
-                    strokeWidth={3}
-                  />
-                </div>
+              </button>
+              <div>
+                <span className="block text-sm font-bold text-white">
+                  Destacar Proyecto
+                </span>
+                <span className="text-xs text-gray-500 italic">
+                  Aparecerá en la sección principal
+                </span>
               </div>
-              <span className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors">
-                Destacar Proyecto
-              </span>
-            </label>
+            </div>
 
-            <div className="flex items-center gap-3 border-t sm:border-t-0 sm:border-l border-white/10 pt-3 sm:pt-0 sm:pl-6">
-              <ArrowUpDown size={16} className="text-gray-500" />
-              <label className="text-sm text-gray-400 whitespace-nowrap">
-                Prioridad/Orden:
+            <div className="flex items-center gap-3 bg-black/40 px-4 py-2 rounded-xl border border-white/10">
+              <ArrowUpDown size={16} className="text-cyan-500" />
+              <label className="text-xs text-gray-400 font-bold uppercase tracking-wider">
+                Orden:
               </label>
               <input
                 type="number"
                 {...register("sortOrder", { valueAsNumber: true })}
-                className="w-20 p-1.5 rounded-lg bg-black/40 border border-white/10 text-center text-white focus:border-cyan-500 outline-none text-sm"
+                className="w-12 bg-transparent text-center text-white font-bold outline-none"
               />
             </div>
           </div>
 
-          {/* DESC LARGA */}
+          {/* LINKS Y DESC */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <input
+              {...register("repoUrl")}
+              className={inputClass(false)}
+              placeholder="Repo GitHub"
+            />
+            <input
+              {...register("liveUrl")}
+              className={inputClass(false)}
+              placeholder="Live URL"
+            />
+          </div>
+
           <div>
-            <label className={labelClass}>
-              <span className="flex items-center gap-2">
-                <FileText size={14} /> Detalle Técnico
-              </span>
+            <label className="text-sm font-medium text-gray-400 mb-1 ml-1 flex items-center gap-2">
+              <FileText size={14} /> Detalle Técnico
             </label>
             <textarea
               {...register("description")}
-              rows={5}
+              rows={4}
               className={`${inputClass(!!errors.description)} resize-none`}
-              placeholder="Detalles técnicos, tecnologías usadas, desafíos..."
+              placeholder="Tecnologías, desafíos..."
             />
           </div>
         </form>
       </div>
 
-      {/* FOOTER FIXED */}
       <div className="flex justify-end gap-3 p-6 border-t border-white/5 bg-gray-900 rounded-b-2xl z-20 shrink-0">
         <button
           type="button"
@@ -363,7 +324,7 @@ export const ProjectForm = ({
           form="project-form"
           type="submit"
           disabled={isLoading}
-          className="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold rounded-lg shadow-lg shadow-cyan-900/20 transition-all disabled:opacity-50"
+          className="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold rounded-lg shadow-lg transition-all"
         >
           {isLoading ? (
             <Loader2 className="animate-spin" size={18} />
