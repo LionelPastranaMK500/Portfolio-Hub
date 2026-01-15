@@ -20,9 +20,10 @@ import type {
 } from "../../../types/models/project";
 import { ProjectModal } from "./components/ProjectModal";
 import { GlassTiltCard } from "../../../components/ui/GlassTiltCard";
+// IMPORTANTE: Importar el helper
+import { getDriveDirectLink } from "../../../utils/driveHelper";
 
 export default function ProjectsPage() {
-  // Hook de Proyectos
   const {
     projects,
     isLoading,
@@ -39,7 +40,6 @@ export default function ProjectsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<ProjectDto | null>(null);
 
-  // --- HANDLERS ---
   const handleOpenCreate = () => {
     setEditingItem(null);
     setIsModalOpen(true);
@@ -84,7 +84,6 @@ export default function ProjectsPage() {
   const handleUploadCover = async (file: File) => {
     if (!editingItem) return;
 
-    // Validación básica de tamaño (5MB)
     if (file.size > 5 * 1024 * 1024) {
       toast.error("La imagen es muy pesada (Máx 5MB)");
       return;
@@ -99,7 +98,6 @@ export default function ProjectsPage() {
 
   const isFormLoading = isCreating || isUpdating;
 
-  // --- RENDER ---
   if (isLoading)
     return (
       <div className="flex h-96 items-center justify-center text-cyan-500">
@@ -115,7 +113,6 @@ export default function ProjectsPage() {
 
   return (
     <div className="space-y-6">
-      {/* HEADER */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold font-maven text-white flex items-center gap-3">
@@ -134,7 +131,6 @@ export default function ProjectsPage() {
         </button>
       </div>
 
-      {/* LISTA (Tu diseño intacto) */}
       {projects.length === 0 ? (
         <div className="text-center py-20 bg-white/5 rounded-3xl border border-white/5 border-dashed">
           <FolderGit2
@@ -153,12 +149,13 @@ export default function ProjectsPage() {
               key={proj.id}
               className="border-white/10 bg-black/40 group flex flex-col h-full overflow-hidden"
             >
-              {/* Cover Image / Placeholder */}
               <div className="h-40 bg-gray-800 relative overflow-hidden">
                 {proj.coverImage ? (
                   <img
-                    src={proj.coverImage}
+                    // APLICANDO EL HELPER AQUÍ
+                    src={getDriveDirectLink(proj.coverImage)}
                     alt={proj.title}
+                    referrerPolicy="no-referrer"
                     className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
                   />
                 ) : (
@@ -167,7 +164,6 @@ export default function ProjectsPage() {
                   </div>
                 )}
 
-                {/* Badge Destacado */}
                 {proj.featured && (
                   <div className="absolute top-3 right-3 bg-yellow-500/20 border border-yellow-500/50 text-yellow-300 text-xs px-2 py-1 rounded-full flex items-center gap-1 font-bold shadow-lg backdrop-blur-md">
                     <Star size={10} fill="currentColor" /> Featured
@@ -183,8 +179,6 @@ export default function ProjectsPage() {
                   >
                     {proj.title}
                   </h3>
-
-                  {/* Acciones */}
                   <div className="flex gap-1">
                     <button
                       onClick={() => handleOpenEdit(proj)}
@@ -206,13 +200,10 @@ export default function ProjectsPage() {
                 </p>
 
                 <div className="mt-auto pt-4 border-t border-white/5 flex items-center justify-between">
-                  {/* Fechas */}
                   <div className="flex items-center gap-2 text-xs text-gray-500">
                     <Calendar size={12} />
                     <span>{proj.startDate || "N/A"}</span>
                   </div>
-
-                  {/* Links */}
                   <div className="flex gap-3">
                     {proj.repoUrl && (
                       <a
@@ -242,7 +233,6 @@ export default function ProjectsPage() {
         </div>
       )}
 
-      {/* MODAL (Con Props de Upload inyectadas) */}
       <ProjectModal
         isOpen={isModalOpen}
         initialData={editingItem}

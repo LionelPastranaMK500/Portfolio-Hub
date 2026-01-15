@@ -8,7 +8,7 @@ import {
   FolderGit2,
   Link as LinkIcon,
   Calendar,
-  Check, // Icono Check para el checkbox mejorado
+  Check,
   FileText,
   ArrowUpDown,
   AlertTriangle,
@@ -21,6 +21,7 @@ import { projectSchema } from "../../../../types/schemas/ProjectSchema";
 import type { ProjectFormProps } from "../../../../types/ui/ProjectUI";
 import type { ProjectCreateRequest } from "../../../../types/models/project";
 import { CoverUploader } from "../../../../components/ui/CoverUploader";
+import { getDriveDirectLink } from "../../../../utils/driveHelper";
 
 interface ExtendedProjectFormProps extends ProjectFormProps {
   onUploadCover?: (file: File) => void;
@@ -132,7 +133,7 @@ export const ProjectForm = ({
       animate={{ opacity: 1, scale: 1 }}
       className="bg-gray-900 border border-white/10 rounded-2xl w-full max-w-3xl shadow-2xl relative flex flex-col max-h-[90vh]"
     >
-      {/* HEADER FIXED (Fondo Sólido para evitar transparencias raras) */}
+      {/* HEADER FIXED */}
       <div className="flex justify-between items-center px-6 py-4 border-b border-white/5 bg-gray-900 rounded-t-2xl z-20 shrink-0">
         <h3 className="text-xl font-bold text-white flex items-center gap-2">
           <FolderGit2 className="text-cyan-400" />
@@ -146,8 +147,8 @@ export const ProjectForm = ({
         </button>
       </div>
 
-      {/* CONTENIDO SCROLLABLE (Con Scrollbar personalizado) */}
-      <div className="p-6 overflow-y-auto custom-scrollbar flex-1">
+      {/* CONTENIDO SCROLLABLE */}
+      <div className="p-6 overflow-y-auto flex-1">
         <form
           id="project-form"
           onSubmit={handleSubmit(handleFormSubmit)}
@@ -157,7 +158,7 @@ export const ProjectForm = ({
           <div className="mb-6">
             {initialData?.id ? (
               <CoverUploader
-                currentUrl={initialData.coverImage}
+                currentUrl={getDriveDirectLink(initialData.coverImage)}
                 isLoading={!!isUploadingCover}
                 onFileSelect={(file) => onUploadCover && onUploadCover(file)}
               />
@@ -232,7 +233,7 @@ export const ProjectForm = ({
             </div>
           </div>
 
-          {/* FECHAS (Calendario Flotante Arreglado) */}
+          {/* FECHAS (Calendario con posicionamiento corregido) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
               <label className={labelClass}>
@@ -252,9 +253,16 @@ export const ProjectForm = ({
                     placeholderText="Selecciona fecha"
                     showMonthDropdown
                     showYearDropdown
-                    // Props clave para z-index y posición
                     popperPlacement="bottom-start"
                     popperClassName="z-[9999]"
+                    popperModifiers={[
+                      {
+                        name: "offset",
+                        options: {
+                          offset: [0, 8],
+                        },
+                      },
+                    ]}
                   />
                 )}
               />
@@ -276,15 +284,22 @@ export const ProjectForm = ({
                     isClearable
                     popperPlacement="bottom-start"
                     popperClassName="z-[9999]"
+                    popperModifiers={[
+                      {
+                        name: "offset",
+                        options: {
+                          offset: [0, 8],
+                        },
+                      },
+                    ]}
                   />
                 )}
               />
             </div>
           </div>
 
-          {/* CONFIG (Destacado CHECKBOX y Orden) */}
+          {/* CONFIG (Destacado y Orden) */}
           <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 p-4 rounded-xl bg-white/5 border border-white/10">
-            {/* Checkbox rediseñado con CHECK */}
             <label className="flex items-center gap-3 cursor-pointer group select-none">
               <div className="relative">
                 <input
@@ -305,7 +320,6 @@ export const ProjectForm = ({
               </span>
             </label>
 
-            {/* Orden */}
             <div className="flex items-center gap-3 border-t sm:border-t-0 sm:border-l border-white/10 pt-3 sm:pt-0 sm:pl-6">
               <ArrowUpDown size={16} className="text-gray-500" />
               <label className="text-sm text-gray-400 whitespace-nowrap">
@@ -336,7 +350,7 @@ export const ProjectForm = ({
         </form>
       </div>
 
-      {/* FOOTER FIXED (Fondo Sólido) */}
+      {/* FOOTER FIXED */}
       <div className="flex justify-end gap-3 p-6 border-t border-white/5 bg-gray-900 rounded-b-2xl z-20 shrink-0">
         <button
           type="button"
@@ -346,7 +360,6 @@ export const ProjectForm = ({
           Cancelar
         </button>
         <button
-          // Vinculamos al ID del form para hacer submit desde fuera
           form="project-form"
           type="submit"
           disabled={isLoading}
