@@ -4,7 +4,6 @@ import { GlassTiltCard } from "../../../components/ui/GlassTiltCard";
 import { Link } from "react-router-dom";
 import { cn } from "../../../utils/cn";
 import type { PortfolioCardProps } from "../../../types/ui/PortfolioCardProps";
-// 1. IMPORTAR LA UTILIDAD
 import { getDriveDirectLink } from "../../../utils/driveHelper";
 
 export const PortfolioCard = ({

@@ -1,6 +1,5 @@
-import { Briefcase, GraduationCap, Award, Calendar } from "lucide-react";
+import { Briefcase, GraduationCap, Award, ExternalLink } from "lucide-react"; // Calendar eliminado
 import { GlassTiltCard } from "../../../components/ui/GlassTiltCard";
-import { cn } from "../../../utils/cn";
 import type { ProfileTimelineProps } from "../../../types/ui/ProfileTimelineProps";
 
 export const ProfileTimeline = ({
@@ -15,123 +14,109 @@ export const ProfileTimeline = ({
   if (!hasExp && !hasEdu && !hasCerts) return null;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      {/* COLUMNA IZQUIERDA: EXPERIENCIA */}
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      {/* SECCIÓN EXPERIENCIA */}
       {hasExp && (
-        <div className={cn(!hasEdu && !hasCerts ? "md:col-span-2" : "")}>
-          <GlassTiltCard className="p-6 border-white/10 bg-black/20 h-full">
-            <div className="flex items-center gap-3 mb-6 text-white/50">
-              <Briefcase size={20} />
-              <h3 className="uppercase tracking-widest text-sm font-bold">
-                Experiencia
+        <GlassTiltCard className="p-8 border-white/10 bg-black/40 h-full">
+          <div className="flex items-center gap-4 mb-8">
+            <div className="p-2 rounded-lg bg-cyan-500/10 border border-cyan-500/20">
+              <Briefcase size={20} className="text-cyan-400" />
+            </div>
+            <h3 className="uppercase tracking-[0.2em] text-xs font-black text-white/70">
+              Trayectoria
+            </h3>
+          </div>
+
+          <div className="space-y-10 border-l-2 border-white/5 ml-3 relative">
+            {experiences.map((exp) => (
+              <div key={exp.id} className="pl-8 relative group">
+                <div className="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-[#030712] border-2 border-cyan-500 group-hover:scale-125 group-hover:shadow-[0_0_15px_rgba(34,211,238,0.5)] transition-all duration-300" />
+
+                <span className="text-[10px] font-mono text-cyan-500/60 uppercase tracking-widest">
+                  {exp.startDate} — {exp.current ? "Presente" : exp.endDate}
+                </span>
+                <h4 className="text-white font-black text-lg mt-1 tracking-tight">
+                  {exp.role}
+                </h4>
+                <p className="text-cyan-400/80 text-sm font-bold mb-3 uppercase tracking-tighter">
+                  {exp.company}
+                </p>
+                {exp.description && (
+                  <p className="text-gray-400 text-sm leading-relaxed border-l border-white/5 pl-4">
+                    {exp.description}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        </GlassTiltCard>
+      )}
+
+      {/* SECCIÓN DERECHA: EDUCACIÓN Y LOGROS */}
+      <div className="space-y-8">
+        {hasEdu && (
+          <GlassTiltCard className="p-8 border-white/10 bg-black/40">
+            <div className="flex items-center gap-4 mb-8">
+              <div className="p-2 rounded-lg bg-purple-500/10 border border-purple-500/20">
+                <GraduationCap size={20} className="text-purple-400" />
+              </div>
+              <h3 className="uppercase tracking-[0.2em] text-xs font-black text-white/70">
+                Formación
               </h3>
             </div>
-
-            <div className="space-y-8 border-l border-white/10 pl-6 ml-2 relative">
-              {experiences.map((exp) => (
-                <div key={exp.id} className="relative group">
-                  {/* Punto de tiempo */}
-                  <div className="absolute -left-[29px] top-1.5 w-3 h-3 rounded-full bg-black border-2 border-cyan-500 group-hover:bg-cyan-500 transition-colors" />
-
-                  {/* CORRECCIÓN: Usamos 'role' (del DTO) en vez de 'position' */}
-                  <h4 className="text-white font-bold text-lg leading-tight">
-                    {exp.role}
+            <div className="space-y-8">
+              {education.map((edu) => (
+                <div key={edu.id} className="group">
+                  <h4 className="text-white font-bold group-hover:text-cyan-400 transition-colors">
+                    {edu.degree}
                   </h4>
-                  <p className="text-cyan-200/80 font-medium mb-1">
-                    {exp.company}
+                  <p className="text-gray-400 text-sm italic">
+                    {edu.institution}
                   </p>
-
-                  <div className="flex items-center gap-2 text-xs text-gray-500 uppercase tracking-wider font-mono mb-2">
-                    <Calendar size={10} />
-                    <span>
-                      {exp.startDate} —{" "}
-                      {exp.current ? (
-                        <span className="text-green-400">Presente</span>
-                      ) : (
-                        exp.endDate
-                      )}
-                    </span>
-                  </div>
-
-                  {exp.description && (
-                    <p className="text-gray-400 text-sm leading-relaxed border-l-2 border-white/5 pl-3 mt-2">
-                      {exp.description}
-                    </p>
-                  )}
+                  <span className="text-[10px] text-gray-600 font-mono mt-2 block">
+                    {edu.startDate} - {edu.endDate || "Actualidad"}
+                  </span>
                 </div>
               ))}
             </div>
           </GlassTiltCard>
-        </div>
-      )}
+        )}
 
-      {/* COLUMNA DERECHA: EDUCACIÓN Y CERTIFICADOS */}
-      {(hasEdu || hasCerts) && (
-        <div className="space-y-6">
-          {/* EDUCACIÓN */}
-          {hasEdu && (
-            <GlassTiltCard className="p-6 border-white/10 bg-black/20">
-              <div className="flex items-center gap-3 mb-6 text-white/50">
-                <GraduationCap size={20} />
-                <h3 className="uppercase tracking-widest text-sm font-bold">
-                  Educación
-                </h3>
+        {hasCerts && (
+          <GlassTiltCard className="p-8 border-white/10 bg-black/40">
+            <div className="flex items-center gap-4 mb-8">
+              <div className="p-2 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
+                <Award size={20} className="text-yellow-400" />
               </div>
-              <div className="space-y-6">
-                {education.map((edu) => (
-                  <div
-                    key={edu.id}
-                    className="relative pl-4 border-l-2 border-white/5 hover:border-white/20 transition-colors"
-                  >
-                    <h4 className="text-white font-semibold">{edu.degree}</h4>
-                    <p className="text-gray-400 text-sm italic">
-                      {edu.institution}
-                    </p>
-                    <span className="text-xs text-gray-600 font-mono block mt-1">
-                      {edu.startDate} - {edu.endDate || "Actualidad"}
+              <h3 className="uppercase tracking-[0.2em] text-xs font-black text-white/70">
+                Logros
+              </h3>
+            </div>
+            <div className="space-y-4">
+              {certificates.map((cert) => (
+                <div
+                  key={cert.id}
+                  className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-transparent hover:border-white/10 hover:bg-white/10 transition-all group"
+                >
+                  <div className="flex items-center gap-3">
+                    <Award
+                      size={16}
+                      className="text-yellow-500/50 group-hover:text-yellow-400"
+                    />
+                    <span className="text-sm text-gray-300 group-hover:text-white transition-colors">
+                      {cert.name}
                     </span>
                   </div>
-                ))}
-              </div>
-            </GlassTiltCard>
-          )}
-
-          {/* CERTIFICADOS */}
-          {hasCerts && (
-            <GlassTiltCard className="p-6 border-white/10 bg-black/20">
-              <div className="flex items-center gap-3 mb-6 text-white/50">
-                <Award size={20} />
-                <h3 className="uppercase tracking-widest text-sm font-bold">
-                  Certificaciones
-                </h3>
-              </div>
-              <ul className="space-y-4">
-                {certificates.map((cert) => (
-                  <li key={cert.id} className="flex gap-3 group items-start">
-                    <div className="mt-1">
-                      <Award
-                        size={16}
-                        className="text-yellow-500/70 group-hover:text-yellow-400 transition-colors"
-                      />
-                    </div>
-                    <div>
-                      <p className="text-gray-300 text-sm font-medium group-hover:text-white transition-colors">
-                        {cert.name}
-                      </p>
-
-                      {cert.description && (
-                        <p className="text-xs text-gray-500 mt-1 line-clamp-2">
-                          {cert.description}
-                        </p>
-                      )}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </GlassTiltCard>
-          )}
-        </div>
-      )}
+                  <ExternalLink
+                    size={14}
+                    className="text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                  />
+                </div>
+              ))}
+            </div>
+          </GlassTiltCard>
+        )}
+      </div>
     </div>
   );
 };
