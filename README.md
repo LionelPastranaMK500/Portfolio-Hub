@@ -1,73 +1,76 @@
-# React + TypeScript + Vite
+🚀 Portfolio Hub - Gestión de Perfiles Profesionales
+Portfolio Hub es una plataforma web moderna diseñada para que profesionales de diversas áreas (Diseño, Legal, Salud, Ingeniería, etc.) puedan gestionar y desplegar su marca personal de manera eficiente.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+El sistema permite a los usuarios registrarse, personalizar su información profesional a través de un Dashboard administrativo y generar un portafolio público dinámico.
 
-Currently, two official plugins are available:
+✨ Características Principales
+🛠️ Panel de Administración (Dashboard)
+Un entorno privado completo para gestionar cada sección de tu perfil profesional:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Gestión de Proyectos: Sube y edita tus trabajos destacados con soporte para imágenes y enlaces.
 
-## React Compiler
+Habilidades Tecnológicas: Organiza tus competencias por categorías personalizadas.
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+Trayectoria Profesional: Línea de tiempo detallada para Experiencia Laboral y Educación.
 
-## Expanding the ESLint configuration
+Certificaciones: Espacio dedicado para credenciales y logros académicos.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Redes Sociales: Configuración de enlaces externos para contacto directo.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+🌐 Vista Pública
+Landing Page de Impacto: Interfaz moderna con animaciones de partículas y efectos 3D.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+Explorador de Portafolios: Listado dinámico de todos los usuarios registrados en la plataforma.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Perfil Detallado: Vista individual optimizada para mostrar la biografía, proyectos y habilidades del usuario.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+🎨 Experiencia de Usuario (UX)
+Modo Oscuro/Claro: Implementado con persistencia de estado mediante Zustand.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Diseño Responsivo: Optimizado para dispositivos móviles y escritorio usando Tailwind CSS.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Navegación Fluida: Transiciones suaves y carga diferida (Lazy Loading) para un rendimiento óptimo.
+
+🛠️ Stack Tecnológico
+Frontend: React 18 con TypeScript.
+
+Bundler: Vite + SWC (Compilación ultra rápida).
+
+Estado Global: Zustand.
+
+Gestión de Datos: TanStack Query (React Query) v5 para consumo de APIs y caché.
+
+Formularios: React Hook Form + Zod (Validación de esquemas).
+
+Animaciones: Framer Motion y Lucide React para iconografía.
+
+Estilos: Tailwind CSS v3.
+
+🚀 Instalación y Desarrollo
+Clonar el repositorio:
+
+Bash
+
+git clone https://github.com/tu-usuario/portfolio-hub.git
+Instalar dependencias:
+
+Bash
+
+npm install
+Configurar variables de entorno: Crea un archivo .env basado en la configuración del proyecto (URL de la API, etc.).
+
+Iniciar servidor de desarrollo:
+
+Bash
+
+npm run dev
+🏗️ Estructura del Proyecto
+Plaintext
+
+src/
+├── components/     # Componentes UI reutilizables y Layouts
+├── hooks/          # Hooks personalizados para lógica de negocio (API, Auth)
+├── modules/        # Módulos principales (Admin, Auth, Landing, Portafolio)
+├── services/       # Llamadas a servicios de API mediante Axios
+├── store/          # Gestión de estado con Zustand
+└── types/          # Definiciones de TypeScript y esquemas Zod
