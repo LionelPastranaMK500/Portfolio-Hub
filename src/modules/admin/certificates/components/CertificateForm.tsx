@@ -10,6 +10,7 @@ import {
 import type { CertificateFormProps } from "../../../../types/ui/CertificateFormProps";
 import type { CertificateCreateRequest } from "../../../../types/models/certificate";
 import { CertificateUploader } from "../../../../components/ui/CertificateUploader";
+import { getDriveDirectLink } from "../../../../utils/driveHelper";
 
 interface ExtendedCertificateFormProps extends CertificateFormProps {
   onUploadFile?: (file: File) => void;
@@ -21,8 +22,8 @@ export const CertificateForm = ({
   isLoading,
   onSubmit,
   onCancel,
-  onUploadFile, // Nuevo
-  isUploadingFile, // Nuevo
+  onUploadFile,
+  isUploadingFile,
 }: ExtendedCertificateFormProps) => {
   const {
     register,
@@ -59,14 +60,21 @@ export const CertificateForm = ({
     onSubmit(payload);
   };
 
+  const inputClass = (hasError: boolean) =>
+    `w-full p-3 rounded-xl bg-black/40 border text-white focus:ring-1 outline-none transition-all placeholder-gray-600 ${
+      hasError
+        ? "border-red-500/50 focus:border-red-500 focus:ring-red-500/20"
+        : "border-white/10 focus:border-cyan-500/50 focus:ring-cyan-500/20"
+    }`;
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="bg-gray-900 border border-white/10 rounded-2xl p-6 w-full max-w-lg shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar"
+      className="bg-gray-900 border border-white/10 rounded-2xl w-full max-w-lg shadow-2xl relative flex flex-col max-h-[90vh]"
     >
-      {/* HEADER DEL FORM */}
-      <div className="flex justify-between items-center mb-6 border-b border-white/5 pb-4 sticky top-0 bg-gray-900 z-10">
+      {/* HEADER FIJO */}
+      <div className="flex justify-between items-center px-6 py-4 border-b border-white/5 bg-gray-900 rounded-t-2xl z-20">
         <h3 className="text-xl font-bold text-white flex items-center gap-2">
           <Award className="text-cyan-400" />
           {initialData ? "Editar Certificado" : "Nuevo Certificado"}
@@ -79,95 +87,89 @@ export const CertificateForm = ({
         </button>
       </div>
 
-      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
-        {/* --- SECCIÓN UPLOAD (SOLO EDICIÓN) --- */}
-        <div className="mb-6">
-          {initialData?.id ? (
-            <CertificateUploader
-              currentUrl={initialData.imageUrl} // Usamos imageUrl del DTO
-              isLoading={!!isUploadingFile}
-              onFileSelect={(file) => onUploadFile && onUploadFile(file)}
-            />
-          ) : (
-            <div className="p-4 rounded-xl bg-yellow-500/10 border border-yellow-500/20 flex items-center gap-3 text-yellow-200/80 text-sm">
-              <AlertTriangle size={18} className="shrink-0" />
-              <span>
-                Guarda el certificado primero para poder subir la imagen del
-                diploma.
-              </span>
-            </div>
-          )}
-        </div>
-
-        {/* CAMPO: NOMBRE */}
-        <div>
-          <label className="block text-sm font-medium text-gray-400 mb-1 ml-1">
-            Nombre del Certificado
-          </label>
-          <input
-            {...register("name")}
-            className={`w-full p-3 rounded-xl bg-black/40 border text-white focus:ring-1 outline-none transition-all placeholder-gray-600
-              ${
-                errors.name
-                  ? "border-red-500/50 focus:border-red-500 focus:ring-red-500/20"
-                  : "border-white/10 focus:border-cyan-500/50 focus:ring-cyan-500/20"
-              }`}
-            placeholder="Ej: AWS Certified Cloud Practitioner"
-          />
-          {errors.name && (
-            <span className="text-red-400 text-xs mt-1 ml-1 flex items-center gap-1">
-              • {errors.name.message}
-            </span>
-          )}
-        </div>
-
-        {/* CAMPO: DESCRIPCIÓN */}
-        <div>
-          <label className="block text-sm font-medium text-gray-400 mb-1 ml-1">
-            Entidad Emisora / Descripción
-          </label>
-          <textarea
-            {...register("description")}
-            rows={3}
-            className={`w-full p-3 rounded-xl bg-black/40 border text-white focus:ring-1 outline-none transition-all placeholder-gray-600 resize-none
-              ${
-                errors.description
-                  ? "border-red-500/50 focus:border-red-500 focus:ring-red-500/20"
-                  : "border-white/10 focus:border-cyan-500/50 focus:ring-cyan-500/20"
-              }`}
-            placeholder="Ej: Amazon Web Services (AWS)..."
-          />
-          {errors.description && (
-            <span className="text-red-400 text-xs mt-1 ml-1 flex items-center gap-1">
-              • {errors.description.message}
-            </span>
-          )}
-        </div>
-
-        {/* BOTONES DE ACCIÓN */}
-        <div className="flex justify-end gap-3 pt-4 border-t border-white/5 mt-6 sticky bottom-0 bg-gray-900 z-10">
-          <button
-            type="button"
-            onClick={onCancel}
-            className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition-all"
-          >
-            Cancelar
-          </button>
-
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold rounded-lg shadow-lg shadow-cyan-900/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isLoading ? (
-              <Loader2 className="animate-spin" size={18} />
+      {/* CONTENIDO CON SCROLL PROPIO */}
+      <div className="p-6 overflow-y-auto custom-scrollbar flex-1">
+        <form
+          id="certificate-form"
+          onSubmit={handleSubmit(handleFormSubmit)}
+          className="space-y-6"
+        >
+          <div className="mb-2">
+            {initialData?.id ? (
+              <CertificateUploader
+                currentUrl={getDriveDirectLink(initialData.imageUrl)}
+                isLoading={!!isUploadingFile}
+                onFileSelect={(file) => onUploadFile && onUploadFile(file)}
+              />
             ) : (
-              <Save size={18} />
+              <div className="p-4 rounded-xl bg-yellow-500/10 border border-yellow-500/20 flex items-center gap-3 text-yellow-200/80 text-sm">
+                <AlertTriangle size={18} className="shrink-0" />
+                <span>
+                  Guarda el certificado primero para subir el diploma.
+                </span>
+              </div>
             )}
-            {isLoading ? "Guardando..." : "Guardar"}
-          </button>
-        </div>
-      </form>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-400 mb-1 ml-1">
+              Nombre del Certificado
+            </label>
+            <input
+              {...register("name")}
+              className={inputClass(!!errors.name)}
+              placeholder="Ej: AWS Certified Cloud Practitioner"
+            />
+            {errors.name && (
+              <span className="text-red-400 text-xs mt-1 ml-1">
+                • {errors.name.message}
+              </span>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-400 mb-1 ml-1">
+              Entidad Emisora / Descripción
+            </label>
+            <textarea
+              {...register("description")}
+              rows={4}
+              className={`${inputClass(!!errors.description)} resize-none`}
+              placeholder="Ej: Amazon Web Services (AWS)..."
+            />
+            {errors.description && (
+              <span className="text-red-400 text-xs mt-1 ml-1">
+                • {errors.description.message}
+              </span>
+            )}
+          </div>
+        </form>
+      </div>
+
+      {/* FOOTER FIJO */}
+      <div className="flex justify-end gap-3 p-6 border-t border-white/5 bg-gray-900 rounded-b-2xl z-20">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition-all"
+        >
+          Cancelar
+        </button>
+
+        <button
+          form="certificate-form"
+          type="submit"
+          disabled={isLoading}
+          className="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold rounded-lg shadow-lg shadow-cyan-900/20 transition-all disabled:opacity-50"
+        >
+          {isLoading ? (
+            <Loader2 className="animate-spin" size={18} />
+          ) : (
+            <Save size={18} />
+          )}
+          {isLoading ? "Guardando..." : "Guardar"}
+        </button>
+      </div>
     </motion.div>
   );
 };

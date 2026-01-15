@@ -33,6 +33,10 @@ export default function ExperiencePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<ExperienceDto | null>(null);
 
+  // --- SOLUCIÓN AL ERROR DE TYPESCRIPT ---
+  // Agrupamos los estados para pasarlos al modal
+  const isFormLoading = isCreating || isUpdating;
+
   // --- HANDLERS ---
   const handleOpenCreate = () => {
     setEditingItem(null);
@@ -75,15 +79,13 @@ export default function ExperiencePage() {
     });
   };
 
-  const isFormLoading = isCreating || isUpdating;
-
-  // --- RENDER ---
   if (isLoading)
     return (
       <div className="flex h-96 items-center justify-center text-cyan-500">
         <Loader2 className="animate-spin h-10 w-10" />
       </div>
     );
+
   if (isError)
     return (
       <div className="p-6 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 flex gap-3">
@@ -122,83 +124,75 @@ export default function ExperiencePage() {
           <h3 className="text-xl font-bold text-gray-300">
             Sin experiencia registrada
           </h3>
-          <p className="text-gray-500 mt-2">
-            Añade tu primer empleo para construir tu perfil.
-          </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4">
-          {experiences.map((exp) => (
-            <GlassTiltCard
-              key={exp.id}
-              className="p-6 border-white/10 bg-black/40 group relative overflow-hidden"
-            >
-              {/* Decoración */}
-              <div className="absolute -left-4 top-0 w-1 h-full bg-gradient-to-b from-purple-500 to-cyan-500 opacity-50" />
+          {[...experiences]
+            .sort((a, b) => b.id - a.id)
+            .map((exp) => (
+              <GlassTiltCard
+                key={exp.id}
+                className="p-0 border-white/10 bg-black/40 group relative overflow-hidden"
+              >
+                <div className="absolute left-0 top-0 w-1.5 h-full bg-gradient-to-b from-cyan-500 via-blue-600 to-purple-600 opacity-70 group-hover:opacity-100 transition-opacity" />
 
-              <div className="flex flex-col md:flex-row justify-between items-start gap-4">
-                <div className="flex-1">
-                  {/* Role & Company */}
-                  <h3 className="text-xl font-bold text-white mb-0.5">
-                    {exp.role}
-                  </h3>
-                  <h4 className="text-lg text-cyan-400 font-medium mb-2">
-                    {exp.company}
-                  </h4>
+                <div className="p-6 pl-8 flex flex-col md:flex-row justify-between items-start gap-4">
+                  <div className="flex-1">
+                    <h3 className="text-xl font-bold text-white mb-0.5 tracking-tight">
+                      {exp.role}
+                    </h3>
+                    <h4 className="text-lg text-cyan-400 font-medium mb-4">
+                      {exp.company}
+                    </h4>
 
-                  {/* Meta Info */}
-                  <div className="flex flex-wrap items-center gap-4 text-sm text-gray-400 mb-3">
-                    <div className="flex items-center gap-1.5">
-                      <Calendar size={14} />
-                      <span>{exp.startDate}</span>
-                      <span>—</span>
-                      <span
-                        className={
-                          exp.current
-                            ? "text-emerald-400 font-bold px-2 py-0.5 bg-emerald-500/10 rounded-full text-xs"
-                            : ""
-                        }
-                      >
-                        {exp.current ? "Actualidad" : exp.endDate}
-                      </span>
-                    </div>
-                    {exp.location && (
-                      <div className="flex items-center gap-1.5">
-                        <MapPin size={14} />
-                        <span>{exp.location}</span>
+                    <div className="flex flex-wrap items-center gap-3 text-xs text-gray-400 mb-5">
+                      <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
+                        <Calendar size={12} className="text-cyan-500" />
+                        <span>{exp.startDate}</span>
+                        <span className="opacity-30">—</span>
+                        <span
+                          className={
+                            exp.current ? "text-emerald-400 font-bold" : ""
+                          }
+                        >
+                          {exp.current ? "Actualidad" : exp.endDate}
+                        </span>
                       </div>
+                      {exp.location && (
+                        <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
+                          <MapPin size={12} className="text-cyan-500" />
+                          <span>{exp.location}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {exp.description && (
+                      <p className="text-sm text-gray-400 max-w-4xl leading-relaxed whitespace-pre-wrap border-l border-white/10 pl-4">
+                        {exp.description}
+                      </p>
                     )}
                   </div>
 
-                  {exp.description && (
-                    <p className="text-sm text-gray-400 max-w-3xl leading-relaxed whitespace-pre-wrap">
-                      {exp.description}
-                    </p>
-                  )}
+                  <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
+                    <button
+                      onClick={() => handleOpenEdit(exp)}
+                      className="p-2.5 bg-white/5 hover:bg-white/10 rounded-xl text-gray-400 hover:text-cyan-400 transition-colors border border-white/5"
+                    >
+                      <Edit2 size={18} />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(exp.id)}
+                      className="p-2.5 bg-red-500/5 hover:bg-red-500/10 rounded-xl text-gray-400 hover:text-red-400 transition-colors border border-white/5"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
                 </div>
-
-                {/* Acciones */}
-                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button
-                    onClick={() => handleOpenEdit(exp)}
-                    className="p-2 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-colors"
-                  >
-                    <Edit2 size={18} />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(exp.id)}
-                    className="p-2 hover:bg-red-500/10 rounded-lg text-gray-400 hover:text-red-400 transition-colors"
-                  >
-                    <Trash2 size={18} />
-                  </button>
-                </div>
-              </div>
-            </GlassTiltCard>
-          ))}
+              </GlassTiltCard>
+            ))}
         </div>
       )}
 
-      {/* MODAL */}
       <ExperienceModal
         isOpen={isModalOpen}
         initialData={editingItem}

@@ -32,7 +32,8 @@ export default function EducationPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<EducationDto | null>(null);
 
-  // --- HANDLERS ---
+  const isFormLoading = isCreating || isUpdating;
+
   const handleOpenCreate = () => {
     setEditingItem(null);
     setIsModalOpen(true);
@@ -74,9 +75,6 @@ export default function EducationPage() {
     });
   };
 
-  const isFormLoading = isCreating || isUpdating;
-
-  // --- RENDER ---
   if (isLoading)
     return (
       <div className="flex h-96 items-center justify-center text-cyan-500">
@@ -92,7 +90,6 @@ export default function EducationPage() {
 
   return (
     <div className="space-y-6">
-      {/* HEADER */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold font-maven text-white flex items-center gap-3">
@@ -111,7 +108,6 @@ export default function EducationPage() {
         </button>
       </div>
 
-      {/* LISTA */}
       {educationList.length === 0 ? (
         <div className="text-center py-20 bg-white/5 rounded-3xl border border-white/5 border-dashed">
           <GraduationCap
@@ -119,79 +115,78 @@ export default function EducationPage() {
             className="mx-auto text-gray-600 mb-4 opacity-50"
           />
           <h3 className="text-xl font-bold text-gray-300">Sin registros</h3>
-          <p className="text-gray-500 mt-2">
-            Añade tu primera experiencia educativa.
-          </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4">
-          {educationList.map((edu) => (
-            <GlassTiltCard
-              key={edu.id}
-              className="p-6 border-white/10 bg-black/40 group relative overflow-hidden"
-            >
-              {/* Decoración */}
-              <div className="absolute -left-4 top-0 w-1 h-full bg-gradient-to-b from-cyan-500 to-blue-600 opacity-50" />
+          {[...educationList]
+            .sort((a, b) => b.id - a.id)
+            .map((edu) => (
+              <GlassTiltCard
+                key={edu.id}
+                className="p-0 border-white/10 bg-black/40 group relative overflow-hidden"
+              >
+                {/* RAYA LATERAL GRADIENTE */}
+                <div className="absolute left-0 top-0 w-1.5 h-full bg-gradient-to-b from-cyan-500 via-blue-600 to-purple-600 opacity-70 group-hover:opacity-100 transition-opacity" />
 
-              <div className="flex flex-col md:flex-row justify-between items-start gap-4">
-                {/* Info Principal */}
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-xs font-bold uppercase tracking-wider">
-                      {edu.degree}
-                    </span>
-                    {edu.field && (
-                      <span className="text-gray-500 text-sm">
-                        • {edu.field}
+                {/* CONTENIDO CON PADDING MEJORADO (pl-8) */}
+                <div className="p-6 pl-8 flex flex-col md:flex-row justify-between items-start gap-4">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-[10px] font-bold uppercase tracking-widest">
+                        {edu.degree}
                       </span>
+                      {edu.field && (
+                        <span className="text-gray-500 text-xs font-medium uppercase tracking-tighter italic">
+                          {edu.field}
+                        </span>
+                      )}
+                    </div>
+                    <h3 className="text-xl font-bold text-white mb-2">
+                      {edu.institution}
+                    </h3>
+
+                    <div className="flex items-center gap-2 text-xs text-gray-400 mb-4">
+                      <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
+                        <Calendar size={12} className="text-cyan-500" />
+                        <span>{edu.startDate}</span>
+                        <span className="opacity-30">—</span>
+                        <span
+                          className={
+                            !edu.endDate ? "text-emerald-400 font-bold" : ""
+                          }
+                        >
+                          {edu.endDate || "Actualidad"}
+                        </span>
+                      </div>
+                    </div>
+
+                    {edu.description && (
+                      <p className="text-sm text-gray-400 max-w-4xl leading-relaxed whitespace-pre-wrap border-l border-white/10 pl-4">
+                        {edu.description}
+                      </p>
                     )}
                   </div>
-                  <h3 className="text-xl font-bold text-white mb-1">
-                    {edu.institution}
-                  </h3>
 
-                  <div className="flex items-center gap-2 text-sm text-gray-400 mb-3">
-                    <Calendar size={14} />
-                    <span>{edu.startDate}</span>
-                    <span>—</span>
-                    <span
-                      className={
-                        !edu.endDate ? "text-emerald-400 font-medium" : ""
-                      }
+                  <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
+                    <button
+                      onClick={() => handleOpenEdit(edu)}
+                      className="p-2.5 bg-white/5 hover:bg-white/10 rounded-xl text-gray-400 hover:text-cyan-400 transition-colors border border-white/5"
                     >
-                      {edu.endDate || "Actualidad"}
-                    </span>
+                      <Edit2 size={18} />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(edu.id)}
+                      className="p-2.5 bg-red-500/5 hover:bg-red-500/10 rounded-xl text-gray-400 hover:text-red-400 transition-colors border border-white/5"
+                    >
+                      <Trash2 size={18} />
+                    </button>
                   </div>
-
-                  {edu.description && (
-                    <p className="text-sm text-gray-400 max-w-3xl">
-                      {edu.description}
-                    </p>
-                  )}
                 </div>
-
-                {/* Acciones */}
-                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button
-                    onClick={() => handleOpenEdit(edu)}
-                    className="p-2 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-colors"
-                  >
-                    <Edit2 size={18} />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(edu.id)}
-                    className="p-2 hover:bg-red-500/10 rounded-lg text-gray-400 hover:text-red-400 transition-colors"
-                  >
-                    <Trash2 size={18} />
-                  </button>
-                </div>
-              </div>
-            </GlassTiltCard>
-          ))}
+              </GlassTiltCard>
+            ))}
         </div>
       )}
 
-      {/* MODAL */}
       <EducationModal
         isOpen={isModalOpen}
         initialData={editingItem}

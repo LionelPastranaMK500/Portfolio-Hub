@@ -1,5 +1,6 @@
 import { useRef } from "react";
 import { Camera, Loader2, Image as ImageIcon } from "lucide-react";
+import { getDriveDirectLink } from "../../utils/driveHelper";
 
 interface IconUploaderProps {
   currentUrl: string | null | undefined;
@@ -13,6 +14,9 @@ export const IconUploader = ({
   isLoading,
 }: IconUploaderProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Procesamos la URL para que sea compatible con Google Drive
+  const directUrl = getDriveDirectLink(currentUrl);
 
   const handleClick = () => {
     if (!isLoading) fileInputRef.current?.click();
@@ -49,11 +53,12 @@ export const IconUploader = ({
           </div>
         ) : null}
 
-        {currentUrl ? (
+        {directUrl ? (
           <>
             <img
-              src={currentUrl}
+              src={directUrl}
               alt="Icon"
+              referrerPolicy="no-referrer"
               className={`w-12 h-12 object-contain transition-opacity ${
                 isLoading ? "opacity-50" : "opacity-100"
               }`}

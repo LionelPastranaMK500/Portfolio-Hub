@@ -15,6 +15,7 @@ import {
   Youtube,
   Globe,
   Link as LinkIcon,
+  ExternalLink,
 } from "lucide-react";
 import { useSocialLinks } from "../../../hooks/useSocialLink";
 import type {
@@ -24,17 +25,21 @@ import type {
 import { SocialLinkModal } from "./components/SocialLinkModal";
 import { GlassTiltCard } from "../../../components/ui/GlassTiltCard";
 
-// Helper para iconos dinámicos
+// Helper para iconos dinámicos con tamaños consistentes
 const getIcon = (platformName: string) => {
   const lower = platformName.toLowerCase();
-  if (lower.includes("github")) return <Github />;
-  if (lower.includes("linkedin")) return <Linkedin />;
-  if (lower.includes("twitter") || lower.includes("x")) return <Twitter />;
-  if (lower.includes("facebook")) return <Facebook />;
-  if (lower.includes("instagram")) return <Instagram />;
-  if (lower.includes("youtube")) return <Youtube />;
-  if (lower.includes("web") || lower.includes("site")) return <Globe />;
-  return <LinkIcon />;
+  const props = { size: 24, strokeWidth: 2 };
+
+  if (lower.includes("github")) return <Github {...props} />;
+  if (lower.includes("linkedin")) return <Linkedin {...props} />;
+  if (lower.includes("twitter") || lower.includes("x"))
+    return <Twitter {...props} />;
+  if (lower.includes("facebook")) return <Facebook {...props} />;
+  if (lower.includes("instagram")) return <Instagram {...props} />;
+  if (lower.includes("youtube")) return <Youtube {...props} />;
+  if (lower.includes("web") || lower.includes("site"))
+    return <Globe {...props} />;
+  return <LinkIcon {...props} />;
 };
 
 export default function SocialLinksPage() {
@@ -52,7 +57,8 @@ export default function SocialLinksPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<SocialLinkDto | null>(null);
 
-  // --- HANDLERS ---
+  const isFormLoading = isCreating || isUpdating;
+
   const handleOpenCreate = () => {
     setEditingItem(null);
     setIsModalOpen(true);
@@ -69,12 +75,12 @@ export default function SocialLinksPage() {
   };
 
   const handleDelete = async (id: number) => {
-    if (window.confirm("¿Eliminar este enlace?")) {
+    if (window.confirm("¿Eliminar este enlace de red social?")) {
       try {
         await deleteSocialLink(id);
-        toast.success("Enlace eliminado");
+        toast.success("Enlace eliminado correctamente");
       } catch (error) {
-        toast.error("Error al eliminar");
+        toast.error("Error al eliminar el enlace");
       }
     }
   };
@@ -90,13 +96,10 @@ export default function SocialLinksPage() {
         handleClose();
         return editingItem ? "Enlace actualizado" : "Enlace creado";
       },
-      error: "Error al guardar",
+      error: "Error al guardar el enlace",
     });
   };
 
-  const isFormLoading = isCreating || isUpdating;
-
-  // --- RENDER ---
   if (isLoading)
     return (
       <div className="flex h-96 items-center justify-center text-cyan-500">
@@ -111,7 +114,7 @@ export default function SocialLinksPage() {
     );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* HEADER */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
@@ -119,74 +122,94 @@ export default function SocialLinksPage() {
             <Share2 className="text-cyan-400" size={32} />
             Redes Sociales
           </h1>
-          <p className="text-gray-400 mt-1">Conecta con tu audiencia.</p>
+          <p className="text-gray-400 mt-1 italic">
+            Conecta tu presencia digital en un solo lugar.
+          </p>
         </div>
         <button
           onClick={handleOpenCreate}
-          className="flex items-center gap-2 px-5 py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-full transition-all hover:scale-105 active:scale-95 font-medium shadow-lg backdrop-blur-md"
+          className="flex items-center gap-2 px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-2xl transition-all hover:scale-105 active:scale-95 font-bold shadow-lg backdrop-blur-md group"
         >
-          <Plus size={20} /> Nuevo Enlace
+          <Plus
+            size={20}
+            className="group-hover:text-cyan-400 transition-colors"
+          />
+          Nuevo Enlace
         </button>
       </div>
 
-      {/* LISTA */}
+      {/* GRID DE REDES */}
       {socialLinks.length === 0 ? (
-        <div className="text-center py-20 bg-white/5 rounded-3xl border border-white/5 border-dashed">
-          <Share2 size={48} className="mx-auto text-gray-600 mb-4 opacity-50" />
-          <h3 className="text-xl font-bold text-gray-300">Sin enlaces</h3>
-          <p className="text-gray-500 mt-2">
-            Agrega LinkedIn, GitHub o tu sitio web.
+        <div className="text-center py-20 bg-white/5 rounded-[2rem] border border-white/5 border-dashed">
+          <Share2 size={64} className="mx-auto text-gray-700 mb-4 opacity-30" />
+          <h3 className="text-xl font-bold text-gray-400">Tu red está vacía</h3>
+          <p className="text-gray-600 mt-2">
+            Agrega LinkedIn o GitHub para que te encuentren.
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {[...socialLinks]
-            .sort((a, b) => a.sortOrder - b.sortOrder) // Ordenar por sortOrder
+            .sort((a, b) => a.sortOrder - b.sortOrder)
             .map((link) => (
               <GlassTiltCard
                 key={link.id}
-                className="p-5 border-white/10 bg-black/40 group relative overflow-hidden flex items-center justify-between hover:border-cyan-500/30 transition-all"
+                className="p-0 border-white/10 bg-black/40 group relative overflow-hidden transition-all hover:border-cyan-500/50"
               >
-                <div className="flex items-center gap-4 min-w-0">
-                  {/* Icono Dinámico */}
-                  <div className="p-3 bg-white/5 rounded-xl text-cyan-400 group-hover:text-white group-hover:bg-cyan-500 transition-colors shadow-inner">
-                    {getIcon(link.platform)}
+                {/* Indicador de Orden Superior */}
+                <div className="absolute top-0 right-0 px-3 py-1 bg-white/5 rounded-bl-xl text-[10px] font-black text-gray-500 group-hover:text-cyan-400 transition-colors">
+                  0{link.sortOrder}
+                </div>
+
+                <div className="p-6 flex flex-col gap-5">
+                  {/* Icono y Título */}
+                  <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 flex items-center justify-center bg-gradient-to-br from-white/10 to-transparent rounded-2xl border border-white/10 text-cyan-400 group-hover:text-white group-hover:scale-110 group-hover:bg-cyan-500 transition-all duration-500 shadow-xl">
+                      {getIcon(link.platform)}
+                    </div>
+                    <div className="min-w-0">
+                      <h3 className="text-lg font-black text-white uppercase tracking-tighter truncate">
+                        {link.platform}
+                      </h3>
+                      <div className="flex items-center gap-1 text-[10px] text-gray-500 font-bold uppercase tracking-widest">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        Online
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="min-w-0">
-                    <h3 className="text-lg font-bold text-white truncate">
-                      {link.platform}
-                    </h3>
+                  {/* URL */}
+                  <div className="bg-black/20 p-3 rounded-xl border border-white/5 flex items-center justify-between group/link">
+                    <span className="text-xs text-gray-500 truncate mr-2 font-mono">
+                      {link.url.replace(/^https?:\/\//, "")}
+                    </span>
                     <a
                       href={link.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-xs text-gray-500 hover:text-cyan-400 truncate block transition-colors"
+                      className="text-gray-400 hover:text-cyan-400 transition-colors shrink-0"
                     >
-                      {link.url}
+                      <ExternalLink size={14} />
                     </a>
                   </div>
-                </div>
 
-                {/* Acciones */}
-                <div className="flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity translate-x-2 group-hover:translate-x-0">
-                  <button
-                    onClick={() => handleOpenEdit(link)}
-                    className="p-1.5 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-colors"
-                  >
-                    <Edit2 size={16} />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(link.id)}
-                    className="p-1.5 hover:bg-red-500/10 rounded-lg text-gray-400 hover:text-red-400 transition-colors"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                </div>
-
-                {/* Indicador de Orden (Discreto) */}
-                <div className="absolute top-2 right-2 text-[10px] text-gray-600 font-mono opacity-50">
-                  #{link.sortOrder}
+                  {/* Footer de la Card / Acciones */}
+                  <div className="flex items-center justify-between pt-2">
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleOpenEdit(link)}
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-cyan-500/10 hover:bg-cyan-500/20 rounded-lg text-cyan-400 text-[10px] font-black uppercase tracking-wider transition-all border border-cyan-500/20"
+                      >
+                        <Edit2 size={12} /> Editar
+                      </button>
+                      <button
+                        onClick={() => handleDelete(link.id)}
+                        className="p-1.5 hover:bg-red-500/10 rounded-lg text-gray-600 hover:text-red-400 transition-colors border border-transparent hover:border-red-500/20"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </GlassTiltCard>
             ))}

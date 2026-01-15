@@ -9,6 +9,7 @@ import type {
 } from "../../../types/models/certificate";
 import { CertificateModal } from "./components/CertificateModal";
 import { GlassTiltCard } from "../../../components/ui/GlassTiltCard";
+import { getDriveDirectLink } from "../../../utils/driveHelper";
 
 export default function CertificatesPage() {
   const {
@@ -65,12 +66,10 @@ export default function CertificatesPage() {
     });
   };
 
-  // 3. HANDLER DE SUBIDA
   const handleUploadFile = async (file: File) => {
     if (!editingCert) return;
 
     if (file.size > 5 * 1024 * 1024) {
-      // 5MB Limit
       toast.error("El archivo es muy pesado (Máx 5MB)");
       return;
     }
@@ -102,7 +101,6 @@ export default function CertificatesPage() {
 
   return (
     <div className="space-y-6">
-      {/* ... Header igual ... */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold font-maven text-white flex items-center gap-3">
@@ -118,7 +116,6 @@ export default function CertificatesPage() {
         </button>
       </div>
 
-      {/* GRID ACTUALIZADO CON IMAGENES */}
       {certificates.length === 0 ? (
         <div className="text-center py-20 bg-white/5 rounded-3xl border border-white/5 border-dashed">
           <Award size={48} className="mx-auto text-gray-600 mb-4 opacity-50" />
@@ -133,12 +130,12 @@ export default function CertificatesPage() {
               key={cert.id}
               className="border-white/10 bg-black/40 flex flex-col justify-between group h-full relative overflow-hidden"
             >
-              {/* IMAGEN DEL CERTIFICADO (NUEVO) */}
               <div className="h-40 bg-gray-800 relative overflow-hidden flex items-center justify-center border-b border-white/5">
                 {cert.imageUrl ? (
                   <img
-                    src={cert.imageUrl}
+                    src={getDriveDirectLink(cert.imageUrl)}
                     alt={cert.name}
+                    referrerPolicy="no-referrer"
                     className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
                   />
                 ) : (
@@ -148,11 +145,9 @@ export default function CertificatesPage() {
 
               <div className="p-5 relative z-10 flex-1 flex flex-col">
                 <div className="flex justify-between items-start mb-2">
-                  {/* ... */}
                   <h3 className="text-lg font-bold text-white leading-tight line-clamp-2">
                     {cert.name}
                   </h3>
-
                   <div className="flex gap-1 min-w-fit">
                     <button
                       onClick={() => handleOpenEdit(cert)}
@@ -168,16 +163,15 @@ export default function CertificatesPage() {
                     </button>
                   </div>
                 </div>
-
                 <p className="text-sm text-gray-400 line-clamp-3 mb-2">
                   {cert.description}
                 </p>
-
-                {/* ID / Vinculado */}
                 <div className="mt-auto pt-2 border-t border-white/5 flex justify-between items-center text-xs text-gray-500">
                   <span>ID: {cert.id}</span>
                   {cert.educationId && (
-                    <span className="text-cyan-500/60">Vinculado</span>
+                    <span className="text-cyan-500/60 font-bold uppercase tracking-wider">
+                      Vinculado
+                    </span>
                   )}
                 </div>
               </div>
@@ -186,7 +180,6 @@ export default function CertificatesPage() {
         </div>
       )}
 
-      {/* MODAL CON PROPS DE SUBIDA */}
       <CertificateModal
         isOpen={isModalOpen}
         initialData={editingCert}

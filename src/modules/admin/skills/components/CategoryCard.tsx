@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useSkillsByCategory } from "../../../../hooks/useSkills";
-import { useUpload } from "../../../../hooks/useUpload"; // <--- 1. IMPORTAR
+import { useUpload } from "../../../../hooks/useUpload";
 import { toast } from "sonner";
 import {
   Edit2,
@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { GlassTiltCard } from "../../../../components/ui/GlassTiltCard";
 import { SkillModal } from "./Modals";
+import { getDriveDirectLink } from "../../../../utils/driveHelper"; // IMPORTADO
 import type {
   SkillDto,
   SkillCreateRequest,
@@ -34,13 +35,11 @@ export const CategoryCard = ({
     isUpdating,
   } = useSkillsByCategory(category.id);
 
-  // 2. HOOK DE SUBIDA
   const { uploadSkillIcon, isUploadingSkillIcon } = useUpload();
 
   const [isSkillModalOpen, setSkillModalOpen] = useState(false);
   const [editingSkill, setEditingSkill] = useState<SkillDto | null>(null);
 
-  // --- HANDLERS SKILLS ---
   const handleOpenAddSkill = () => {
     setEditingSkill(null);
     setSkillModalOpen(true);
@@ -77,16 +76,12 @@ export const CategoryCard = ({
     }
   };
 
-  // 3. HANDLER DE SUBIDA DE ICONO
   const handleUploadIcon = async (file: File) => {
     if (!editingSkill) return;
-
     if (file.size > 2 * 1024 * 1024) {
-      // 2MB Limit para iconos
       toast.error("El icono debe pesar menos de 2MB");
       return;
     }
-
     toast.promise(uploadSkillIcon({ skillId: editingSkill.id, file }), {
       loading: "Subiendo icono...",
       success: "¡Icono actualizado!",
@@ -97,7 +92,6 @@ export const CategoryCard = ({
   return (
     <div className="h-full">
       <GlassTiltCard className="h-full flex flex-col border-white/10 bg-black/40">
-        {/* HEADER CATEGORIA */}
         <div className="p-4 border-b border-white/10 flex justify-between items-center bg-white/5">
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold text-gray-500 bg-black/30 px-2 py-1 rounded">
@@ -121,7 +115,6 @@ export const CategoryCard = ({
           </div>
         </div>
 
-        {/* LISTA DE SKILLS */}
         <div className="p-4 flex-1 space-y-3 min-h-[200px]">
           {isLoading ? (
             <div className="flex justify-center py-10">
@@ -130,10 +123,6 @@ export const CategoryCard = ({
           ) : isError ? (
             <div className="text-red-400 text-sm flex items-center gap-2">
               <AlertCircle size={14} /> Error cargando skills
-            </div>
-          ) : skills.length === 0 ? (
-            <div className="text-center py-8 text-gray-600 text-sm italic">
-              Sin habilidades aún
             </div>
           ) : (
             skills.map((skill) => (
@@ -146,19 +135,28 @@ export const CategoryCard = ({
                     size={14}
                     className="text-gray-600 cursor-move"
                   />
-                  {skill.icon && (
-                    <img
-                      src={skill.icon}
-                      alt=""
-                      className="w-6 h-6 object-contain" // Icono un poco más grande
-                    />
-                  )}
+                  <div className="w-8 h-8 flex items-center justify-center bg-black/20 rounded-md overflow-hidden">
+                    {skill.icon ? (
+                      <img
+                        src={getDriveDirectLink(skill.icon)} // APLICADO HELPER
+                        alt=""
+                        referrerPolicy="no-referrer"
+                        className="w-6 h-6 object-contain"
+                      />
+                    ) : (
+                      <div className="w-2 h-2 rounded-full bg-cyan-500/40" />
+                    )}
+                  </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-200 leading-none">
-                      {skill.name}
-                    </p>
-                    {/* Barra de Nivel Mini */}
-                    <div className="w-20 h-1 bg-gray-700 rounded-full mt-1.5 overflow-hidden">
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-medium text-gray-200 leading-none">
+                        {skill.name}
+                      </p>
+                      <span className="text-[10px] font-bold text-cyan-500/80">
+                        {skill.level}%
+                      </span>
+                    </div>
+                    <div className="w-24 h-1 bg-gray-700 rounded-full mt-1.5 overflow-hidden">
                       <div
                         className="h-full bg-cyan-500"
                         style={{ width: `${skill.level}%` }}
@@ -185,18 +183,16 @@ export const CategoryCard = ({
           )}
         </div>
 
-        {/* FOOTER: ADD SKILL */}
         <div className="p-3 border-t border-white/10">
           <button
             onClick={handleOpenAddSkill}
-            className="w-full py-2 flex items-center justify-center gap-2 text-sm font-bold text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-xl transition-all border border-dashed border-white/10 hover:border-white/30"
+            className="w-full py-2 flex items-center justify-center gap-2 text-sm font-bold text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-xl transition-all border border-dashed border-white/10"
           >
             <Plus size={16} /> Agregar Habilidad
           </button>
         </div>
       </GlassTiltCard>
 
-      {/* MODAL DE SKILLS */}
       <SkillModal
         isOpen={isSkillModalOpen}
         initialData={editingSkill}
